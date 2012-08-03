@@ -1,0 +1,210 @@
+﻿/*----------------------------------------------------------
+The base color for this template is #5c87b2. If you'd like
+to use a different color start by replacing all instances of
+#5c87b2 with your new color.
+----------------------------------------------------------*/
+body {
+    background-color: #ffffff;
+    font-size: 16px;
+    font-family: "Segoe UI Light", Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+    color: #000000;
+}
+
+div#container 
+{
+    width: 980px;
+    position: relative;
+    margin: 0 auto;
+}
+
+a, a:visited, a:hover
+{
+    text-decoration: none;
+    color: #000000;
+}
+a:hover
+{
+    text-decoration: underline;
+}
+
+/* header with navigation */
+
+header
+{
+    margin-top: 40px;
+}
+
+section#sectionMyName
+{
+    float: left;
+}
+section#sectionMyName h2
+{
+    font-size: 40px;
+    line-height: 40px;
+    font-weight: lighter;
+}
+#myTitle
+{
+    float: right;
+    font-size:  18px;
+}
+nav
+{
+    float: right;
+    font-size: 26px;
+    margin-right: 10px;
+}
+nav ul
+{
+    list-style: none;
+}
+nav ul li
+{
+    float: left;
+    margin-left: 15px;
+}
+
+/* Copyright footer */
+footer
+{
+    font-size: 12px;
+    margin-top: 40px;
+    text-align: left;
+}
+
+
+/* Home site */
+#two-column-wrap
+{
+    overflow: hidden;
+    float: left;
+    width: 100%;
+    position: relative;
+       margin-top: 50px;
+}
+
+#infoPhoto
+{
+    width: 210px;
+    float: left;
+}
+#infoContent
+{
+    width: 100%;
+   margin-left: -210px;
+   float:right;
+}
+#infoSection
+{
+   margin-left: 210px;
+    width: 770px;
+
+}
+#beginBracket
+{
+    width: 70px;
+}
+#closeBracket
+{
+    width: 20px;
+}
+
+#implement
+{
+    font-size: 36px;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    font-weight: bold;
+    display:block;
+    margin-top: 8px;
+}
+.bracket
+{
+    font-size: 220px;
+    line-height: 100px;
+    font-weight: lighter;
+}
+#infoSection table tr td
+{
+    vertical-align: middle;
+}
+#infoSectionMeDesc p
+{
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+p.mailme
+{
+    margin-top: 5px;
+}
+.mailme .leftCol
+{
+    display: inline-block;
+    line-height: 40px;
+    font-size: 18px;
+    font-weight: bold;
+    width: 150px;
+}
+
+/* Blog posts */
+
+.blog-posts article
+{
+    clear: right;
+}
+.blog-posts article header h1
+{
+    font-size: 24px;
+}
+.blog-posts article header time
+{
+    text-transform: lowercase;
+}
+.blog-posts article .post-content
+{
+    margin-top: 15px;
+}
+.blog-posts article .post-readmore
+{
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* media queries */
+@media screen and (max-width: 980px){
+    div#container 
+    {
+        width: 100%;
+    }
+    body, #infoSection
+    {
+        width: auto;
+    }
+}
+
+@media screen and (max-width: 750px)
+{
+    .bracket, #implement
+    {
+        display: none;
+    }
+}
+@media screen and (max-width: 500px)
+{
+    #infoContent
+    {
+        width: auto;
+    }
+    nav
+    {
+        width: 250px;
+        float: left;
+    }
+    nav ul li
+    {
+        margin-left: 0px;
+        margin-right: 15px;
+    }
+}
