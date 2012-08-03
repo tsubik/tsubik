@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <link href="css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="css/Site.css" rel="stylesheet" type="text/css" />
+    <!-- [if lt IE 9]>
+        <script src="scripts/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+</head>
+<body>
+    <div id="container">
+        <header>
+        <section id="sectionMyName">
+            <h2>Tomasz Subik</h2>
+            <span id="myTitle">software developer</span>
+        </section>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/Blog/">Blog</a></li>
+                <li><a href="/Projects/">Projects</a></li>
+            </ul>
+        </nav>
+        </header>
+        <div style="clear: both;">
+        {{content}}
+        <footer>
+            Copyright (c) by Tomasz Subik, Design by Tomasz Subik
+        </footer>
+        </div>
+    
+</body>
+</html>
