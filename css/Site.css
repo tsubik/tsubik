@@ -33,6 +33,8 @@ a:hover
 
 header
 {
+    overflow:hidden;
+    margin-bottom: 50px;
     margin-top: 40px;
 }
 
@@ -83,7 +85,6 @@ footer
     float: left;
     width: 100%;
     position: relative;
-       margin-top: 50px;
 }
 
 #infoPhoto
@@ -166,6 +167,15 @@ p.mailme
 {
     margin-top: 15px;
 }
+.blog-posts article .post-content p,.blog-posts article .post-content ol
+{
+    margin-bottom: 10px;
+}
+.blog-posts article .post-content ol
+{
+    padding-left: 20px;
+}
+
 .blog-posts article .post-readmore
 {
     margin-top: 5px;

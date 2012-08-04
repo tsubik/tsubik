@@ -1,0 +1,24 @@
+---
+layout : layout
+title : Tomasz Subik Mega Master software/web developer ASP.NET MVC Developer
+---
+
+<div>
+	{% for project in site.categories.projects %}
+        <section class="blog-posts">
+            <article>
+                <header class="post-header">
+                    <h1 class="post-title">
+                        {{project.title}}
+                    </h1>
+                    
+                </header>
+                <div class="post-content">
+                    {{project.content}}
+                </div>
+            </article>
+        </section>
+   {% endfor %}
+
+   
+   </div> 
