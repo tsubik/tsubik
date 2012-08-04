@@ -45,11 +45,11 @@ title : Tomasz Subik Mega Master software/web developer ASP.NET MVC Developer
                         {{post.title}}
                     </h1>
                     <p>
-                        <time datetime="2012-07-30">{{ post.date | date: "%e %B, %Y"  }}</time>
+                        <time datetime="2012-07-30">{{ post.date | date: "%d %B, %Y"  }}</time>
                     </p>
                 </header>
                 <div class="post-content">
-                    {{post.content}}
+                    {{post.short}}
                 </div>
                 <div class="post-readmore">
                     <a href="{{post.url}}">Read more...</a>

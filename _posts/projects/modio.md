@@ -1,7 +1,8 @@
 --- 
-layout: post
-title: "Powershell script to bring your publish on the next level"
-author: "Tomasz Subik"
+layout: project
+title: "Modio.pl"
+categories: ["project"]
+permalink: /project/modio
 ---
 
 

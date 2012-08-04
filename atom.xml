@@ -3,25 +3,24 @@ layout: nil
 ---
 <?xml version="1.0"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Feed Name</title>
-  <link href="http://domain/"/>
-  <link type="application/atom+xml" rel="self" href="http://domain/atom.xml"/>
+  <title>Tomasz Subik</title>
+  <link type="application/atom+xml" rel="self" href="http://tsubik.com/atom.xml"/>
   <updated>{{ site.time | date_to_xmlschema }}</updated>
-  <id>http://domain/</id>
+  <id>http://tsubik.com/</id>
   <author>
-    <name>Author</name>
-    <email>Email</email>
+    <name>Tomasz Subik</name>
+    <email>tsubik@gmail.com</email>
   </author>
 
   {% for post in site.posts %}
   <entry>
-    <id>http://domain/{{ post.url }}</id>
-    <link type="text/html" rel="alternate" href="http://domain/{{ post.url }}"/>
+    <id>http://tsubik.com/{{ post.url }}</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com/{{ post.url }}"/>
     <title>{{ post.title | xml_escape }}</title>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <author>
-      <name>Author</name>
-      <uri>http://domain/</uri>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
     </author>
     <content type="html">{{ post.content | xml_escape }}</content>
   </entry>
