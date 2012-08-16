@@ -1,8 +1,8 @@
 --- 
 layout: post
-title: "New personal webiste released"
+title: "New personal website released"
 categories: ["post"]
-tags: ["me","Design"]
+tags: ["Me","Design"]
 date: 2012-08-04
 author: "Tomasz Subik"
 ---
@@ -21,14 +21,18 @@ So I've made a list of requirement to meet. My site must:
 </p>
 <ol type="1">
 	<li>Be static and easily to modify.<br/>
-To meet this I am using Jekyll tool built in Ruby. This is static site generation tool, allowing you to use layouts, templates and many nice features. Building site with Jekyll could be topic for another blog post, I do not want to describe here, you can check out code of my site on github.
+To meet this I am using Jekyll tool built in Ruby. This is static site generation tool, allowing you to use layouts, templates and many nice features. Building site with Jekyll could be topic for another blog post, I do not want to describe here, you can check out code of my site on <a href="http://github.com/tsubik/tsubik">github</a>.
 </li>
 	<li>
 	Have responsive design to adopt to mobile devices screens.
 	</li>
 	<li>
-	Be bright, simple without any unnecessary fireworks.</li>
+	Be bright, simple and without any unnecessary fireworks.</li>
 </ol>
 <p>
-I think I met these requirements so I hope you like me new design. Enjoy.
+I think I met these requirements so I hope you will like my new design. Enjoy.
 </p>
+<p>
+	Check this site out on <a href="http://github.com/tsubik/tsubik">Github</a>
+</p>
+

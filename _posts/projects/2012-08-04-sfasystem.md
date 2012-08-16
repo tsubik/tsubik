@@ -3,6 +3,7 @@ layout: project
 title: "Sales force automation system"
 categories: ["projects"]
 permalink: /projects/sfasystem
+imageUrl: /images/projects/sms_small.png
 ---
 
 <p>

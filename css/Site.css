@@ -5,7 +5,8 @@ to use a different color start by replacing all instances of
 ----------------------------------------------------------*/
 body {
     background-color: #ffffff;
-    font-size: 16px;
+    font-size: 18px;
+    line-height: 1.5;
     font-family: "Segoe UI Light", Verdana, Helvetica, Sans-Serif;
     margin: 0;
     padding: 0;
@@ -19,14 +20,20 @@ div#container
     margin: 0 auto;
 }
 
-a, a:visited, a:hover
+a, a:visited
 {
     text-decoration: none;
-    color: #000000;
+    /*color: #34AC98;*/
+    color: #000;
 }
-a:hover
+a:hover, a:focus
 {
-    text-decoration: underline;
+    color: #000;
+    /*color: #EC6635;*/
+}
+a.nounderline
+{
+    text-decoration: none;
 }
 
 /* header with navigation */
@@ -37,7 +44,10 @@ header
     margin-bottom: 50px;
     margin-top: 40px;
 }
-
+section#sectionMyName a
+{
+    color: #000;
+}
 section#sectionMyName
 {
     float: left;
@@ -68,6 +78,18 @@ nav ul li
     float: left;
     margin-left: 15px;
 }
+nav ul li:hover
+{
+
+}
+nav ul li a{
+    padding: 10px 10px 10px 10px;
+}
+nav ul li a:hover
+{
+        color: #fff;
+    background-color: #4A91AC;
+}
 
 /* Copyright footer */
 footer
@@ -75,6 +97,7 @@ footer
     font-size: 12px;
     margin-top: 40px;
     text-align: left;
+    color: #898989;
 }
 
 
@@ -102,7 +125,7 @@ footer
 {
    margin-left: 210px;
     width: 770px;
-
+   margin-top: 30px;
 }
 #beginBracket
 {
@@ -119,11 +142,10 @@ footer
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     font-weight: bold;
     display:block;
-    margin-top: 8px;
 }
 .bracket
 {
-    font-size: 220px;
+    font-size: 280px;
     line-height: 100px;
     font-weight: lighter;
 }
@@ -155,9 +177,14 @@ p.mailme
 {
     clear: right;
 }
+.blog-posts article header
+{
+    margin-bottom: 0px;
+}
 .blog-posts article header h1
 {
-    font-size: 24px;
+    font-size: 28px;
+    color: #4A91AC;
 }
 .blog-posts article header time
 {
@@ -181,8 +208,77 @@ p.mailme
     margin-top: 5px;
     text-align: right;
 }
+.blog-posts article .post-readmore a
+{
+    padding: 7px;
+}
+.blog-posts article .post-readmore a:hover
+{
+        color: #fff;
+    background-color: #4A91AC;
+}
+.gist
+{
+    font-size: 12px;
+}
 
-/* media queries */
+
+/* Project list */
+
+.projects-small article
+{
+    overflow: hidden;
+    clear: right;
+    margin-bottom: 15px;
+    background: #F2F2F2;
+    padding: 0px 10px 10px 10px;
+}
+
+.projects-small article header
+{
+    margin-bottom: 15px;
+    margin-left: -10px;
+    margin-top: 0px;
+}
+.projects-small article header h1
+{
+    font-size: 24px;
+    padding: 10px;
+    display: inline-block;
+    color: #fff;
+    background: #68217A;
+}
+.projects-small article .project-small-image
+{
+    width: 210px;
+    float: left;
+}
+.project-small-content-wrap
+{
+    float: right;
+    width: 100%;
+    margin-left: -220px;
+}
+.projects-small article .project-small-content
+{
+    margin-left: 220px;
+}
+.projects-small article .project-small-content p,.projects-small article .project-small-content ol
+{
+    margin-bottom: 10px;
+}
+.projects-small article .project-small-content ol
+{
+    padding-left: 20px;
+}
+
+.projects-small article .project-small-readmore
+{
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* Responsive web design media queries */
 @media screen and (max-width: 980px){
     div#container 
     {
