@@ -5,6 +5,7 @@ categories: ["post"]
 tags: ["Me","Design"]
 date: 2012-08-04
 author: "Tomasz Subik"
+permalink: /blog/new-personal-website-released/
 ---
 
 <p>

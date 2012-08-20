@@ -12,7 +12,9 @@ body {
     padding: 0;
     color: #000000;
 }
-
+div.clear{
+    clear:both;
+}
 div#container 
 {
     width: 980px;
@@ -38,7 +40,7 @@ a.nounderline
 
 /* header with navigation */
 
-header
+#container > header
 {
     overflow:hidden;
     margin-bottom: 50px;
@@ -94,10 +96,10 @@ nav ul li a:hover
 /* Copyright footer */
 footer
 {
-    font-size: 12px;
+    font-size: 14px;
     margin-top: 40px;
-    text-align: left;
-    color: #898989;
+    padding: 10px 0px 10px 0px;
+    text-align: center;
 }
 
 
@@ -112,7 +114,7 @@ footer
 
 #infoPhoto
 {
-    width: 210px;
+    width: 200px;
     float: left;
 }
 #infoContent
@@ -125,7 +127,7 @@ footer
 {
    margin-left: 210px;
     width: 770px;
-   margin-top: 30px;
+   margin-top: 10px;
 }
 #beginBracket
 {
@@ -173,6 +175,25 @@ p.mailme
 
 /* Blog posts */
 
+h1#recent-blog-posts
+{
+    font-size: 28px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+a.view-all-posts
+{
+    margin-left: 10px;
+    padding: 5px;
+}
+a.view-all-posts:hover
+{
+     color: #fff;
+    background-color: #4A91AC;   
+}
+
+.blog-posts { margin-bottom: 15px;}
 .blog-posts article
 {
     clear: right;
@@ -276,6 +297,62 @@ p.mailme
 {
     margin-top: 5px;
     text-align: right;
+}
+
+/* CV  */
+div#cv{
+
+}
+div#cv div.cv-section
+{
+    clear: both;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+div#cv div.cv-section .title h1
+{
+    font-size: 24px;
+}
+
+div#cv div.cv-section .content .label
+{
+    width: 200px;
+    float: left;
+    clear: left;
+}
+div#cv div.cv-section .content .text
+{
+    float: left;
+    width: 700px;
+}
+h1.cv-position{
+    font-size: 20px;
+    color:#4A91AC;
+}
+span.cv-company{
+    font-size: 14px;
+}
+div.cv-skill
+{
+    float:left;
+    width: 310px;
+}
+
+
+[class^="icon-"], [class*=" icon-"] 
+{
+    display: inline-block;
+    line-height: 16px;
+    width: 16px;
+    height: 16px;    
+}
+i.icon-square-filled
+{
+    background: url('../images/square_filled.png');
+}
+i.icon-square-empty
+{
+    background: url('../images/square_empty.png');
 }
 
 /* Responsive web design media queries */
