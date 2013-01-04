@@ -8,7 +8,7 @@ author: "Tomasz Subik"
 permalink: /blog/twitter-bootstrap-aspnetmvc4-sass/
 -
 
-Many times if I look at css stylesheets of middle and big systems it just makes me cry or even vomit. Total chaos, code repetition, basicallt too much css. That's why css preprocessors were invented. In the .NET world the most popular right now is Less. However, for a long time there is another player on the market - [Sass][Sass]. And that is what this post will be about - Sass along with asp.net (no matter mvc or not). If anyone doesn't know what Sass is, [check it out][Sass]. In a nutshell it is CSS preprocessor giving you much more power to create your stylesheets (nesting, mixing, variables, etc.). Blablabla... anyway in comparisons to less, sass is the winner, but you will choose whichever you like more.
+Many times if I look at css stylesheets of middle and big systems it just makes me cry or even vomit. Total chaos, code repetition, basicallt too much css. That's why css preprocessors were invented. In the .NET world the most popular right now is Less. However, for a long time there is another player on the market - [Sass][Sass]. <!-- more -->And that is what this post will be about - Sass along with asp.net (no matter mvc or not). If anyone doesn't know what Sass is, [check it out][Sass]. In a nutshell it is CSS preprocessor giving you much more power to create your stylesheets (nesting, mixing, variables, etc.). Blablabla... anyway in comparisons to less, sass is the winner, but you will choose whichever you like more.
 There are some posts over the Internet describing how to use Sass with asp.net, but I want to show you how I'm using it and what I am avoiding.
 
 Pre-requirements
@@ -21,8 +21,12 @@ Simple list what do we need to start playing around Sass:
 
 What I am using:
 - Compass as a preprocessor. You need to install ruby envoirement and then simple using your favorite console shell
-	<!-- gem install compass -->
-- For syntax highlighting I am using [Web Essentials][Web Essentials] - I highly recommend this extension. Sass support is a new feature there and soon will be much better.
+<noscript><pre>
+gem install compass
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=install_compass"></script> 
+
+- For syntax highlighting I am using [Web Essentials][Web_Essentials] - I highly recommend this extension. Sass support is a new feature there and soon will be much better.
 - For development, debugging - Chrome development tools (for firefox users - [FireSass][FireSass])
 
 Ok. So what I am avoiding:
@@ -43,10 +47,12 @@ We don't want to build solution from scratch that's why we will use twitter boot
 First steps.
 1. Create new empty MVC 4 project.
 2. Install packages
-<!-- 
+<noscript><pre>
 PM> Install-Package twitter.bootstrap.mvc4
 PM> Install-Package twitter.bootstrap.mvc4.sample
- -->
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=install_packages"></script> 
+
 That's it. Fire up application and see what we got so far.
 
 Now our application is using standard css stylesheets. Our goal is to replace them with a Sass files.
@@ -54,7 +60,7 @@ Now our application is using standard css stylesheets. Our goal is to replace th
 Sass goodness
 -----------------
 
-I found out a nice [port from Less to Sass bootstrap][sass twitter bootstrap]. Nice job! Sure we gonna use it.
+I found out a nice [port from Less to Sass bootstrap][sass_twitter_bootstrap]. Nice job! Sure we gonna use it.
 
 If you have git, simple clone the repo, if you don't... install git :]. Fine, if you don't, just download zipped repo.
 
@@ -63,49 +69,56 @@ Next steps.
 2. Create Content\Sass\Twitter path.
 3. Copy all files from lib directory. 
 4. Initialize compass project. Open console in root folder of web application.
-	<!-- compass init -->
+<noscript><pre>
+compass init
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=compass_init"></script> 
 That will set up default compass project configuration. We need to change it a little bit.
 So now:
 1. Delete sass and stylesheet folder created in root path.
 2. Edit config.rb file
-
-
-<!-- # Set this to the root of your project when deployed:
+<noscript><pre><code>
+# Set this to the root of your project when deployed:
 http_path = "/"
 css_dir = "Content"
 sass_dir = "Content/sass"
 images_dir = "Content/images"
 javascripts_dir = "javascripts"
- -->
+</code></pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=config.rb"></script> 
 
 3. Add application.scss file to Content/sass directory
 
-<!-- 	@import "compass/reset";
-	@import "twitter/bootstrap";
-	@import "twitter/responsive";
- -->
+<noscript><pre><code>
+@import "compass/reset";
+@import "twitter/bootstrap";
+@import "twitter/responsive";
+</code></pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=application_v1.scss"></script> 
+
 So we are using one of compass built-in stylesheet (reset), main twitter bootstrap and reponsive stylesheet.
 
 Let's compile ours stylesheets
-
-	<!-- compass compile -->
-
+<noscript><pre>
+compass compile
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=compass_compile"></script> 
 Now in Content directory we have all needed stylesheets.
 
 Update application layouts to use application.css from Content directory.
 
 delete followings
-
-
-<!-- 	<link href="@Styles.Url("~/content/css")" rel="stylesheet"/>
-	<link href="@Styles.Url("~/Content/css-responsive")" rel="stylesheet" type="text/css" />
- -->
-
+<noscript><pre><code>
+<link href="@Styles.Url("~/content/css")" rel="stylesheet"/>
+<link href="@Styles.Url("~/Content/css-responsive")" rel="stylesheet" type="text/css" />
+</code>
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=layout_1.html"></script> 
 add only application.css
-
-
-	<!-- <link href="@Styles.Url("~/Content/application.css")" rel="stylesheet" type="text/css" /> -->
-
+<noscript><pre><code>
+<link href="@Styles.Url("~/Content/application.css")" rel="stylesheet" type="text/css" />
+</code></pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=layout_2.html"> </script> 
 
 Run application to check out if everything is working as it should.
 
@@ -113,13 +126,13 @@ Playground
 ------------------
 
 
-We set up so playground. Before you start coding anything using Sass I recommend get familiar with its features - [Sass tutorial][sass tutorial]. After that we can play around.
+We set up so playground. Before you start coding anything using Sass I recommend get familiar with its features - [Sass tutorial][sass_tutorial]. After that we can play around.
 
 I changed "sing-up" page.
 
 Move inline style from _BootstrapLayout.empty.cshtml layout into application.scss
-
-<!-- body {
+<noscript><pre><code>
+body {
 	padding-top: 40px;
 	padding-bottom: 40px;
 	background-color: #f5f5f5;
@@ -149,8 +162,12 @@ Move inline style from _BootstrapLayout.empty.cshtml layout into application.scs
 	margin-bottom: 15px;
 	padding: 7px 9px;
 }
- -->
+
+</code></pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=application.css"></script> 
+
 Now change it a little bit using sass features (I'm using variables from twitter bootstrap here) and import twitter bootstrap and compass default reset stylesheet.
+<noscript><pre><code>
 
 @import "compass/reset";
 @import "twitter/bootstrap";
@@ -186,6 +203,8 @@ body
 }   
 
 @import "twitter/responsive";
+</code></pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=application_v2.scss"></script> 
 
 It will change a little design, but... so what. In this little example I show you usage of variables, mixins and nestings. 
 
@@ -198,16 +217,18 @@ There is something that everyone hates in every code generating languages like c
 
 But there are some 
 
-For chrome browser (24+) there is for now an experiment sass support feature. Obtain how to use it - [http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools/][Chrome Sass]
+For chrome browser (24+) there is for now an experiment sass support feature. Obtain how to use it - [http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools/][Chrome_Sass]
 
-For firefox you have [FireSass extension][FireSass]. You will find instructions on how to use it on [http://nex-3.com/posts/92-firesass-bridges-the-gap-between-sass-and-firebug][Firefox Sass]
+For firefox you have [FireSass extension][FireSass]. You will find instructions on how to use it on [http://nex-3.com/posts/92-firesass-bridges-the-gap-between-sass-and-firebug][Firefox_Sass]
 
 
 This solutions requires adding two config lines to config.rb file
-
-<!-- sass_options = {:debug_info => true}
+<noscript><pre>
+sass_options = {:debug_info => true}
 output_style = :expanded
- -->
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=config_v2.rb"></script> 
+
 Sass compiling improvements
 -----------------
 
@@ -220,27 +241,29 @@ compass watch
 And now everytime if you change something in your sass files, the compass will notice this and your stylesheets will be recompiled.
 
 You can also execute "compass compile" after your project compilation adding this to the end of the project file
-
+<noscript><pre>
 <Target Name="AfterCompile" Condition=" '$(Configuration)' == 'Release' ">
     <Exec Command="compass compile" />
     <ItemGroup>
         <Content Include="Styles\*.css" />
     </ItemGroup>
 </Target>
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=project.xml"></script> 
 
 Full solution
 -----------------
 
-You can find end solution on [github][Full solution]. That's it, for futher reading I recommend [The Sass Way][The Sass Way]
+You can find end solution on [github][Full_solution]. That's it, for futher reading I recommend [The Sass Way][The_Sass_Way]
 
 [Sass]: http://sass-lang.com
 [Compass]: http://compass-style.org
-[Web Essentials]: http://visualstudiogallery.msdn.microsoft.com/07d54d12-7133-4e15-becb-6f451ea3bea6
+[Web_Essentials]: http://visualstudiogallery.msdn.microsoft.com/07d54d12-7133-4e15-becb-6f451ea3bea6
 [FireSass]: https://addons.mozilla.org/pl/firefox/addon/firesass-for-firebug
-[sass twitter bootstrap]: https://github.com/jlong/sass-twitter-bootstrap
-[sass tutorial]: http://sass-lang.com/tutorial.html
-[Debug info chrome]: http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools
-[Full solution]: https://github.com/tsubik/aspnet_twitter_sass
-[Firefox Sass]: http://nex-3.com/posts/92-firesass-bridges-the-gap-between-sass-and-firebug
-[Chrome Sass]: http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools
-[The Sass Way]: http://thesassway.com
+[sass_twitter_bootstrap]: https://github.com/jlong/sass-twitter-bootstrap
+[sass_tutorial]: http://sass-lang.com/tutorial.html
+[Debug_info_chrome]: http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools
+[Full_solution]: https://github.com/tsubik/aspnet_twitter_sass
+[Firefox_Sass]: http://nex-3.com/posts/92-firesass-bridges-the-gap-between-sass-and-firebug
+[Chrome_Sass]: http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools
+[The_Sass_Way]: http://thesassway.com
