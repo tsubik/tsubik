@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Open-minded software developer who loves creating useful web apps (C#, asp.net mvc, jQuery, javascript, ruby on rails)">
+    <title>Keep your files in VS project included. Fast and elegant solution</title>
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/Site.css" rel="stylesheet" type="text/css" />
+    
+    <!-- [if lt IE 9]>
+        <script src="scripts/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+</head>
+<body>
+    <div id="container">
+        <header>
+        <section id="sectionMyName">
+        <a href="/" class="nounderline">
+            <h2>Tomasz Subik</h2>
+            <span id="myTitle">software developer</span>
+        </a>
+        </section>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+            </ul>
+        </nav>
+        </header>
+        <div style="clear: both;">
+        <section class="blog-posts">
+    <article>
+        <header class="post-header">
+            <a href="/blog/keep-your-files-in-vs-project-included-fast-and-elegant-solution/">
+            <h1 class="post-title">
+                Keep your files in VS project included. Fast and elegant solution
+            </h1>
+            </a>
+            <p>
+                <time datetime="2012-07-30">22 September, 2012</time>
+            </p>
+        </header>
+        <div class="post-content">
+            <p>In the previous article I wrote a <a href='/blog/powershell-script-to-bring-your-publish-to-the-next-level/'>simple powershell script</a> to find all of the potentially missing file references from my Visual Studio project files.</p>
+
+<p>I realized, however, that the script has some performance issues. For a large solution, it takes quite a few seconds to get the work done. So, I thought it would be much better to write some kind of library for this job. The fact is, I do not want to write some external tools like desktop application. I want to keep it simple. Simple like… installing the additional modules by <a href='http://nuget.org/'>nuget</a>. Oh yeah, so just type some fancy command in package manager console and let it be done.</p>
+<!--more-->
+<p>Sounds perfect!</p>
+
+<h2 id='powershell_cmdlet'>Powershell cmdlet</h2>
+
+<p>You can write your custom command extension for powershell, it is called “cmdlet”. So I wrote one to meet my requirements. This is not a place for a tutorial &#8220;How to create custom cmdlet&#8221; that&#8217;s why if you want to know about it <a href='http://community.bartdesmet.net/blogs/bart/archive/2008/02/03/easy-windows-powershell-cmdlet-development-and-debugging.aspx'>here you go some some hints</a> about creating and dubugging cmdlets.</p>
+
+<h2 id='vspniff'>VSpniff</h2>
+
+<p>Let’s focus on my tool. I called it <a href='https://github.com/tsubik/VSpniff'>VSpniff</a> – shortcut from Visual Studio project not included files finder. You can download the tool from <a href='https://github.com/tsubik/VSpniff'>here</a>. There is also an instruction how to get the tool work in your Visual Studio package manager console.</p>
+
+<h2 id='finding_missing_files_references'>Finding missing files references</h2>
+
+<p>Ok. So how does this works? Let’s simply assume we have some excluded files in project</p>
+
+<p><img alt='excluded files' src='/images/blog/vspniff_01.png' /></p>
+
+<p>They could be accidentally excluded by bad merge or something and we may not even know about it. After installing <a href='https://github.com/tsubik/VSpniff'>VSpniff</a> you could use it to avoid such situations. Just type in the PM console</p>
+<noscript><pre>
+PM> Find-MissingFiles
+</pre></noscript><script src='https://gist.github.com/3766167.js?file=vspniff_command'> </script>
+<p>And here we go</p>
+
+<p><img alt='missing files listed' src='/images/blog/vspniff_02.png' /></p>
+
+<p>All the missing files listed.</p>
+
+<h2 id='configuration'>Configuration</h2>
+
+<p>Ok. Let assume we do not want to look for .png files in the Images folder ;]. To do that, just add a config.vspniff file to the Images directory.</p>
+<noscript><pre>
+mode: append
+excludedExtensions: png
+</pre></noscript><script src='https://gist.github.com/3766167.js?file=vspniff_config'> </script>
+<p>Run the tool once again and here we go</p>
+
+<p><img alt='missing files listed 2' src='/images/blog/vspniff_03.png' /></p>
+
+<p>Configuration file must have .vspniff extension.</p>
+
+<p>There is a default configuration in the box (hard coded) to avoid the need of adding any configuration files. This default configuration looks like that</p>
+<noscript><pre>
+mode: override
+excludedExtensions: user, csproj, aps, pch, vspscc, vssscc, ncb, suo, tlb, tlh, bak, log, lib
+excludedDirs: bin, obj
+</pre></noscript><script src='https://gist.github.com/3766167.js?file=vspniff_default_config'> </script>
+<p>Ok. So what does it mean?</p>
+<noscript><pre>
+#Mode - it is the way that the module will treat your options
+# append - it will append your options to current options context
+# override - in this and subdirs will only take this file options (unless in subdirs are also some config files)
+#excludedExtensions - files with these extensions will not be listed as missing files
+#excludedDirs - program will not be looking in these locations for missing files
+</pre></noscript><script src='https://gist.github.com/3766167.js?file=vspniff_config_description'> </script>
+<p>This is it. I hope you will enjoy using this tool and it helps you avoid many bugs.</p>
+
+<p>Peace.</p>
+        </div>
+    </article>
+</section>
+        <footer>
+            Copyright (c) 2012 Tomasz Subik
+        </footer>
+        </div>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-11585946-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

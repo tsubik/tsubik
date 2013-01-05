@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Open-minded software developer who loves creating useful web apps (C#, asp.net mvc, jQuery, javascript, ruby on rails)">
+    <title>Simple jQueryUI DialogManager</title>
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/Site.css" rel="stylesheet" type="text/css" />
+    
+    <!-- [if lt IE 9]>
+        <script src="scripts/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+</head>
+<body>
+    <div id="container">
+        <header>
+        <section id="sectionMyName">
+        <a href="/" class="nounderline">
+            <h2>Tomasz Subik</h2>
+            <span id="myTitle">software developer</span>
+        </a>
+        </section>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+            </ul>
+        </nav>
+        </header>
+        <div style="clear: both;">
+        <section class="blog-posts">
+    <article>
+        <header class="post-header">
+            <a href="/blog/simple-jqueryui-dialogmanager/">
+            <h1 class="post-title">
+                Simple jQueryUI DialogManager
+            </h1>
+            </a>
+            <p>
+                <time datetime="2012-07-30"> 7 October, 2012</time>
+            </p>
+        </header>
+        <div class="post-content">
+            <p>Recently I&#8217;ve been working on structuring and refactoring javascript code in a middle size application. There are many modal popups, you know popup invoking popup and so on. Many of them were just created on div elements which already exist in the html markup. I thought that it would be a better idea to create these kinds of div elements only if I want to show a dialog using them. The next thing I&#8217;d like to achieve is to use default configuration for created dialogs. Also, I want my div element destroyed after closing the dialog.</p>
+<!--more-->
+<p>Ok. Enough talking. Show me the code.</p>
+<noscript><pre>
+;(function(w){
+    var DialogManager = (function(){
+
+        function DialogManager(){
+            this.dialogIdx= 1;    
+        };
+        DialogManager.prototype.createDialog = function(options){
+            var defaults = {
+                modal: true,
+                resizeable: false,
+                autoOpen: false,
+                //removing dialog after close
+                close: function () {
+                    $(this).remove();
+                }
+            };
+            var id = 'dialogId' + this.dialogIdx;
+            
+            $box = $('#' + id);
+            if (!$box.length) {
+                $box = $('<div id='&apos; + id + &apos;' />').hide().appendTo('body');
+                this.dialogIdx++;
+            }
+            $box.dialog($.extend({}, defaults, options));
+            return $box;
+        };
+
+        return DialogManager;
+    })();
+    w.DialogManager = new DialogManager;
+
+})(window);
+</pre></noscript><script src='https://gist.github.com/3849685.js?file=dialogmanager.js'> </script>
+<p>And usage.</p>
+<noscript><pre>
+var dialog = DialogManager.createDialog({minWidth: 400, title: 'Set some title'});
+dialog.html('Here is the content');
+dialog.dialog('open');
+</pre></noscript><script src='https://gist.github.com/3849685.js?file=usage.js'> </script>
+        </div>
+    </article>
+</section>
+        <footer>
+            Copyright (c) 2012 Tomasz Subik
+        </footer>
+        </div>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-11585946-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>
