@@ -7,7 +7,7 @@ body {
     background-color: #ffffff;
     font-size: 18px;
     line-height: 1.5;
-    font-family: "Segoe UI Light", Verdana, Helvetica, Sans-Serif;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     margin: 0;
     padding: 0;
     color: #000000;
@@ -63,6 +63,7 @@ section#sectionMyName a
 }
 section#sectionMyName
 {
+    font-family: "Segoe UI Light", Verdana, Helvetica, Sans-Serif;
     float: left;
 }
 section#sectionMyName h2
@@ -85,11 +86,13 @@ nav
 nav ul
 {
     list-style: none;
+    padding-left: 0px;
 }
 nav ul li
 {
     float: left;
     margin-left: 15px;
+    list-style: none;
 }
 nav ul li:hover
 {
@@ -217,7 +220,7 @@ a.view-all-posts:hover
 }
 .blog-posts article header h1
 {
-    font-size: 23px;
+    font-size: 30px;
     /*color: #4A91AC;*/
     color: black;
 }
@@ -228,6 +231,12 @@ a.view-all-posts:hover
 .blog-posts article .post-content
 {
     margin-top: 15px;
+}
+.blog-posts article .post-content h2
+{
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 22px;
 }
 .blog-posts article .post-content a{
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
@@ -241,9 +250,32 @@ a.view-all-posts:hover
 {
     margin-bottom: 10px;
 }
-.blog-posts article .post-content ol
+.blog-posts article .post-content ol, .blog-posts article .post-content ul
 {
-    padding-left: 20px;
+    padding-left: 1.5em;
+}
+
+.post-content ul li{
+    margin: 0.5em auto;
+    list-style: disc;
+}
+.post-content ol li{
+    margin: 0.5em auto;       
+}
+.post-content ul li ul li{
+    list-style: circle;
+}
+.post-content pre{
+    white-space: pre;
+}
+.post-content code, .post-content code.inline{
+    display: block;
+    margin: 0.3em;
+    padding: 0.2em;
+    background: #f8f8ff;
+}
+.post-content code.inline{
+    display: inline;
 }
 
 .blog-posts article .post-readmore
@@ -259,6 +291,10 @@ a.view-all-posts:hover
 {
         color: #fff;
     background-color: #4A91AC;
+}
+hr.blog-posts-separator
+{
+    margin: 3em auto;
 }
 .gist
 {
