@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Tomasz Subik</title>
   <link type="application/atom+xml" rel="self" href="http://tsubik.com/atom.xml"/>
-  <updated>2013-01-05T22:33:40+01:00</updated>
+  <updated>2013-01-05T22:59:51+01:00</updated>
   <id>http://tsubik.com/</id>
   <author>
     <name>Tomasz Subik</name>
@@ -13,7 +13,7 @@
   <entry>
     <id>http://tsubik.com//blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/</id>
     <link type="text/html" rel="alternate" href="http://tsubik.com//blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/"/>
-    <title>Sass with asp.net mvc 4 - Twitter Bootstrap example</title>
+    <title>Sass with ASP.NET MVC 4 - Twitter Bootstrap example</title>
     <updated>2013-01-05T00:00:00+01:00</updated>
     <author>
       <name>Tomasz Subik</name>

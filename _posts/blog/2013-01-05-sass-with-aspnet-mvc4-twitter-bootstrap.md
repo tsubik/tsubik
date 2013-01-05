@@ -1,6 +1,6 @@
 --- 
 layout: post
-title: "Sass with asp.net mvc 4 - Twitter Bootstrap example"
+title: "Sass with ASP.NET MVC 4 - Twitter Bootstrap example"
 categories: ["post"]
 tags: ["twitter","aspnet","sass","mvc"]
 date: 2013-01-05

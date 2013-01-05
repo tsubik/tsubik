@@ -6,12 +6,12 @@
     <atom:link href="http://domain/rss.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-au</language>
-    <pubDate>Sat, 05 Jan 2013 22:33:40 +0100</pubDate>
-    <lastBuildDate>Sat, 05 Jan 2013 22:33:40 +0100</lastBuildDate>
+    <pubDate>Sat, 05 Jan 2013 22:59:51 +0100</pubDate>
+    <lastBuildDate>Sat, 05 Jan 2013 22:59:51 +0100</lastBuildDate>
 
     
     <item>
-      <title>Sass with asp.net mvc 4 - Twitter Bootstrap example</title>
+      <title>Sass with ASP.NET MVC 4 - Twitter Bootstrap example</title>
       <link>http://domain/blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/</link>
       <pubDate>Sat, 05 Jan 2013 00:00:00 +0100</pubDate>
       <author>Author</author>
