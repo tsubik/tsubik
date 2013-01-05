@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Tomasz Subik</title>
   <link type="application/atom+xml" rel="self" href="http://tsubik.com/atom.xml"/>
-  <updated>2013-01-05T22:59:51+01:00</updated>
+  <updated>2013-01-05T23:42:36+01:00</updated>
   <id>http://tsubik.com/</id>
   <author>
     <name>Tomasz Subik</name>
@@ -100,11 +100,7 @@
 &lt;/li&gt;
 
 &lt;li&gt;
-&lt;p&gt;Create Content\Sass\Twitter path.&lt;/p&gt;
-&lt;/li&gt;
-
-&lt;li&gt;
-&lt;p&gt;Copy all files from lib directory.&lt;/p&gt;
+&lt;p&gt;Create Content\Sass\Twitter directory and copy there all files from lib directory of cloned sass twitter port.&lt;/p&gt;
 &lt;/li&gt;
 
 &lt;li&gt;

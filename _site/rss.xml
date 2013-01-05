@@ -6,8 +6,8 @@
     <atom:link href="http://domain/rss.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-au</language>
-    <pubDate>Sat, 05 Jan 2013 22:59:51 +0100</pubDate>
-    <lastBuildDate>Sat, 05 Jan 2013 22:59:51 +0100</lastBuildDate>
+    <pubDate>Sat, 05 Jan 2013 23:42:36 +0100</pubDate>
+    <lastBuildDate>Sat, 05 Jan 2013 23:42:36 +0100</lastBuildDate>
 
     
     <item>
@@ -97,11 +97,7 @@
 &lt;/li&gt;
 
 &lt;li&gt;
-&lt;p&gt;Create Content\Sass\Twitter path.&lt;/p&gt;
-&lt;/li&gt;
-
-&lt;li&gt;
-&lt;p&gt;Copy all files from lib directory.&lt;/p&gt;
+&lt;p&gt;Create Content\Sass\Twitter directory and copy there all files from lib directory of cloned sass twitter port.&lt;/p&gt;
 &lt;/li&gt;
 
 &lt;li&gt;

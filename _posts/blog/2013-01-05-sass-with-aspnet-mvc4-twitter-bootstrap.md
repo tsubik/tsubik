@@ -70,9 +70,8 @@ If you have git, simple clone the repo, if you don't... [install git][Git_For_Wi
 Next steps.
 
 1. Delete all css files in Content folder.
-2. Create Content\Sass\Twitter path.
-3. Copy all files from lib directory. 
-4. Initialize compass project. Open console in root folder of web application.
+2. Create Content\Sass\Twitter directory and copy there all files from lib directory of cloned sass twitter port.
+3. Initialize compass project. Open console in root folder of web application.
 <code>
 	compass init
 </code>
