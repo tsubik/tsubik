@@ -6,14 +6,14 @@
     <atom:link href="http://domain/rss.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-au</language>
-    <pubDate>Sat, 05 Jan 2013 22:22:11 +0100</pubDate>
-    <lastBuildDate>Sat, 05 Jan 2013 22:22:11 +0100</lastBuildDate>
+    <pubDate>Sat, 05 Jan 2013 22:33:40 +0100</pubDate>
+    <lastBuildDate>Sat, 05 Jan 2013 22:33:40 +0100</lastBuildDate>
 
     
     <item>
       <title>Sass with asp.net mvc 4 - Twitter Bootstrap example</title>
       <link>http://domain/blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/</link>
-      <pubDate>Fri, 28 Dec 2012 00:00:00 +0100</pubDate>
+      <pubDate>Sat, 05 Jan 2013 00:00:00 +0100</pubDate>
       <author>Author</author>
       <guid>http://domain/blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/</guid>
       <description>&lt;p&gt;Many times if I look at css stylesheets of middle and big systems it just makes me cry. Total chaos, code repetition, basically too much css. That&amp;#8217;s why css preprocessors were invented. In the .NET world the most popular right now is Less. However, for a long time there is another player on the market - &lt;a href='http://sass-lang.com'&gt;Sass&lt;/a&gt;. &lt;!--more--&gt;And that is what this post will be about - Sass along with asp.net (no matter mvc or not). If anyone doesn&amp;#8217;t know what Sass is, &lt;a href='http://sass-lang.com'&gt;check it out&lt;/a&gt;. In a nutshell it is CSS preprocessor giving you much more power to create your stylesheets (nesting, mixing, variables, etc.). Blablabla&amp;#8230; anyway in many comparisons to less, sass is the winner, but you will choose whichever you like more. There are some posts over the Internet describing how to use Sass with asp.net, but I want to show you how I&amp;#8217;m using it and what I am avoiding.&lt;/p&gt;

@@ -3,7 +3,7 @@ layout: post
 title: "Sass with asp.net mvc 4 - Twitter Bootstrap example"
 categories: ["post"]
 tags: ["twitter","aspnet","sass","mvc"]
-date: 2012-12-28
+date: 2013-01-05
 author: "Tomasz Subik"
 permalink: /blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/
 ---
