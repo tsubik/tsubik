@@ -177,6 +177,13 @@ footer
 p.mailme
 {
     margin-top: 5px;
+    float:left;
+    margin-right: 10px;
+}
+div#hireMe
+{
+    float:left;
+    padding: 30px;
 }
 .mailme .leftCol
 {
