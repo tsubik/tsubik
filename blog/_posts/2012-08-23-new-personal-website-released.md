@@ -1,7 +1,6 @@
 --- 
 layout: post
 title: "New personal website released"
-categories: ["post"]
 tags: ["Me","Design"]
 date: 2012-08-23
 author: "Tomasz Subik"

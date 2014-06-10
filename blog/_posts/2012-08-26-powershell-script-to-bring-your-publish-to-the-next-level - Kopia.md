@@ -1,7 +1,6 @@
 --- 
 layout: post
 title: "Powershell script to bring your publish to the next level"
-categories: ["post"]
 tags: ["Powershell",".NET"]
 date: 2012-08-26
 author: "Tomasz Subik"

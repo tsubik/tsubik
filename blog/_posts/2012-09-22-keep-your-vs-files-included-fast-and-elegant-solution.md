@@ -1,7 +1,6 @@
 --- 
 layout: post
 title: "Keep your files in VS project included. Fast and elegant solution"
-categories: ["post"]
 tags: ["Powershell Cmdlet",".NET","Visual Studio"]
 date: 2012-09-22
 author: "Tomasz Subik"

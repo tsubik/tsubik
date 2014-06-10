@@ -1,7 +1,6 @@
 --- 
 layout: post
 title: "Simple jQueryUI DialogManager"
-categories: ["post"]
 tags: ["javascript","jQuery"]
 date: 2012-10-07
 author: "Tomasz Subik"

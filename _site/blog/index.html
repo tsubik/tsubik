@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Open-minded software developer who loves creating useful web apps (C#, asp.net mvc, jQuery, javascript, ruby on rails)">
-    <title>Sass with ASP.NET MVC 4 - Twitter Bootstrap example</title>
+    <title>Blog | Tomasz Subik software developer</title>
     <link href="/css/reset.css" rel="stylesheet" type="text/css" />
     <link href="/css/Site.css" rel="stylesheet" type="text/css" />
     <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -31,20 +31,22 @@
         </nav>
         </header>
         <div style="clear: both;">
-        <section class="blog-posts">
-    <article>
-        <header class="post-header">
-            <a href="/blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/">
-            <h1 class="post-title">
-                Sass with ASP.NET MVC 4 - Twitter Bootstrap example
-            </h1>
-            </a>
-            <p>
-                <time datetime="2012-07-30"> 5 January, 2013</time>
-            </p>
-        </header>
-        <div class="post-content">
-            <p>Many times if I look at css stylesheets of middle and big systems it just makes me cry. Total chaos, code repetition, basically too much css. That’s why css preprocessors were invented. In the .NET world the most popular right now is Less. However, for a long time there is another player on the market - <a href="http://sass-lang.com">Sass</a>. <!--more-->And that is what this post will be about - Sass along with asp.net (no matter mvc or not). If anyone doesn’t know what Sass is, <a href="http://sass-lang.com">check it out</a>. In a nutshell it is CSS preprocessor giving you much more power to create your stylesheets (nesting, mixing, variables, etc.). Blablabla… anyway in many comparisons to less, sass is the winner, but you will choose whichever you like more.
+        <div>
+    
+         <section class="blog-posts">
+            <article>
+                <header class="post-header">
+                   <a href="/blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/">
+                    <h1 class="post-title">
+                        Sass with ASP.NET MVC 4 - Twitter Bootstrap example
+                    </h1>
+                    </a>
+                    <p>
+                        <time datetime="2012-07-30">05 January, 2013</time>
+                    </p>
+                </header>
+                <div class="post-content">
+                     <p>Many times if I look at css stylesheets of middle and big systems it just makes me cry. Total chaos, code repetition, basically too much css. That’s why css preprocessors were invented. In the .NET world the most popular right now is Less. However, for a long time there is another player on the market - <a href="http://sass-lang.com">Sass</a>. And that is what this post will be about - Sass along with asp.net (no matter mvc or not). If anyone doesn’t know what Sass is, <a href="http://sass-lang.com">check it out</a>. In a nutshell it is CSS preprocessor giving you much more power to create your stylesheets (nesting, mixing, variables, etc.). Blablabla… anyway in many comparisons to less, sass is the winner, but you will choose whichever you like more.
 There are some posts over the Internet describing how to use Sass with asp.net, but I want to show you how I’m using it and what I am avoiding.</p>
 
 <h2 id="pre-requirements">Pre-requirements</h2>
@@ -296,9 +298,93 @@ body
 <p>You can find end solution on <a href="https://github.com/tsubik/aspnet_twitter_sass">github</a>. That’s it, for futher reading I recommend <a href="http://thesassway.com">The Sass Way</a></p>
 
 
-        </div>
-    </article>
-</section>
+                </div>
+            </article>
+        </section>
+        <hr class="blog-posts-separator"/>
+   
+         <section class="blog-posts">
+            <article>
+                <header class="post-header">
+                   <a href="/blog/simple-jqueryui-dialogmanager/">
+                    <h1 class="post-title">
+                        Simple jQueryUI DialogManager
+                    </h1>
+                    </a>
+                    <p>
+                        <time datetime="2012-07-30">07 October, 2012</time>
+                    </p>
+                </header>
+                <div class="post-content">
+                     <p>Recently I’ve been working on structuring and refactoring javascript code in a middle size application. There are many modal popups, you know popup invoking popup and so on. Many of them were just created on div elements which already exist in the html markup. I thought that it would be a better idea to create these kinds of div elements only if I want to show a dialog using them. The next thing I’d like to achieve is to use default configuration for created dialogs. Also, I want my div element destroyed after closing the dialog.</p>
+
+
+
+<p>Ok. Enough talking. Show me the code.</p>
+
+<noscript><pre>
+;(function(w){
+    var DialogManager = (function(){
+
+        function DialogManager(){
+            this.dialogIdx= 1;    
+        };
+        DialogManager.prototype.createDialog = function(options){
+            var defaults = {
+                modal: true,
+                resizeable: false,
+                autoOpen: false,
+                //removing dialog after close
+                close: function () {
+                    $(this).remove();
+                }
+            };
+            var id = 'dialogId' + this.dialogIdx;
+            
+            $box = $('#' + id);
+            if (!$box.length) {
+                $box = $('<div id="' + id + '"></div>').hide().appendTo('body');
+                this.dialogIdx++;
+            }
+            $box.dialog($.extend({}, defaults, options));
+            return $box;
+        };
+
+        return DialogManager;
+    })();
+    w.DialogManager = new DialogManager;
+
+})(window);
+</pre></noscript>
+<script src="https://gist.github.com/3849685.js?file=dialogmanager.js"> </script>
+
+<p>And usage.</p>
+
+<noscript><pre>
+var dialog = DialogManager.createDialog({minWidth: 400, title: 'Set some title'});
+dialog.html('Here is the content');
+dialog.dialog('open');
+</pre></noscript>
+<script src="https://gist.github.com/3849685.js?file=usage.js"> </script>
+
+
+                </div>
+            </article>
+        </section>
+        <hr class="blog-posts-separator"/>
+   
+
+    <!-- Pagination links -->
+    <div class="pagination">
+      
+        <span class="previous">Previous</span>
+      
+      <span class="page_number ">Page: 1 of 3</span>
+      
+        <a href="/blog/page2" class="next">Next</a>
+      
+    </div>   
+</div> 
         <footer>
             Copyright (c) 2012 Tomasz Subik
         </footer>

@@ -25,7 +25,7 @@
         <nav>
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/blog/">Blog</a></li>
                 <li><a href="/projects.html">Projects</a></li>
             </ul>
         </nav>
@@ -44,9 +44,12 @@
             </p>
         </header>
         <div class="post-content">
-            <p>Recently I&#8217;ve been working on structuring and refactoring javascript code in a middle size application. There are many modal popups, you know popup invoking popup and so on. Many of them were just created on div elements which already exist in the html markup. I thought that it would be a better idea to create these kinds of div elements only if I want to show a dialog using them. The next thing I&#8217;d like to achieve is to use default configuration for created dialogs. Also, I want my div element destroyed after closing the dialog.</p>
+            <p>Recently I’ve been working on structuring and refactoring javascript code in a middle size application. There are many modal popups, you know popup invoking popup and so on. Many of them were just created on div elements which already exist in the html markup. I thought that it would be a better idea to create these kinds of div elements only if I want to show a dialog using them. The next thing I’d like to achieve is to use default configuration for created dialogs. Also, I want my div element destroyed after closing the dialog.</p>
+
 <!--more-->
+
 <p>Ok. Enough talking. Show me the code.</p>
+
 <noscript><pre>
 ;(function(w){
     var DialogManager = (function(){
@@ -68,7 +71,7 @@
             
             $box = $('#' + id);
             if (!$box.length) {
-                $box = $('<div id='&apos; + id + &apos;' />').hide().appendTo('body');
+                $box = $('<div id="' + id + '"></div>').hide().appendTo('body');
                 this.dialogIdx++;
             }
             $box.dialog($.extend({}, defaults, options));
@@ -80,13 +83,19 @@
     w.DialogManager = new DialogManager;
 
 })(window);
-</pre></noscript><script src='https://gist.github.com/3849685.js?file=dialogmanager.js'> </script>
+</pre></noscript>
+<script src="https://gist.github.com/3849685.js?file=dialogmanager.js"> </script>
+
 <p>And usage.</p>
+
 <noscript><pre>
 var dialog = DialogManager.createDialog({minWidth: 400, title: 'Set some title'});
 dialog.html('Here is the content');
 dialog.dialog('open');
-</pre></noscript><script src='https://gist.github.com/3849685.js?file=usage.js'> </script>
+</pre></noscript>
+<script src="https://gist.github.com/3849685.js?file=usage.js"> </script>
+
+
         </div>
     </article>
 </section>
