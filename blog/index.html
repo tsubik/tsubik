@@ -14,7 +14,7 @@ title : Blog | Tomasz Subik software developer
                     </h1>
                     </a>
                     <p>
-                        <time datetime="2012-07-30">{{ post.date | date: "%d %B, %Y"  }}</time>
+                        <time datetime="{{ post.date }}">{{ post.date | date: "%d %B, %Y"  }}</time>
                     </p>
                 </header>
                 <div class="post-content">
@@ -27,16 +27,12 @@ title : Blog | Tomasz Subik software developer
 
     <!-- Pagination links -->
     <div class="pagination">
-      {% if paginator.previous_page %}
-        <a href="/blog/page{{ paginator.previous_page }}" class="previous">Previous</a>
-      {% else %}
-        <span class="previous">Previous</span>
-      {% endif %}
-      <span class="page_number ">Page: {{ paginator.page }} of {{ paginator.total_pages }}</span>
       {% if paginator.next_page %}
-        <a href="/blog/page{{ paginator.next_page }}" class="next">Next</a>
-      {% else %}
-        <span class="next ">Next</span>
+        <a href="/blog/page{{ paginator.next_page }}" class="previous">&lt;&lt;Older posts</a>
+      {% endif %}
+      
+      {% if paginator.previous_page %}
+        <a href="/blog/page{{ paginator.previous_page }}" class="next">Newer posts&gt;&gt;</a>
       {% endif %}
     </div>   
 </div> 
