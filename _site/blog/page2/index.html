@@ -36,6 +36,76 @@
          <section class="blog-posts">
             <article>
                 <header class="post-header">
+                   <a href="/blog/simple-jqueryui-dialogmanager/">
+                    <h1 class="post-title">
+                        Simple jQueryUI DialogManager
+                    </h1>
+                    </a>
+                    <p>
+                        <time datetime="2012-10-07 00:00:00 +0200">07 October, 2012</time>
+                    </p>
+                </header>
+                <div class="post-content">
+                     <p>Recently I’ve been working on structuring and refactoring javascript code in a middle size application. There are many modal popups, you know popup invoking popup and so on. Many of them were just created on div elements which already exist in the html markup. I thought that it would be a better idea to create these kinds of div elements only if I want to show a dialog using them. The next thing I’d like to achieve is to use default configuration for created dialogs. Also, I want my div element destroyed after closing the dialog.</p>
+
+
+
+<p>Ok. Enough talking. Show me the code.</p>
+
+<noscript><pre>
+;(function(w){
+    var DialogManager = (function(){
+
+        function DialogManager(){
+            this.dialogIdx= 1;    
+        };
+        DialogManager.prototype.createDialog = function(options){
+            var defaults = {
+                modal: true,
+                resizeable: false,
+                autoOpen: false,
+                //removing dialog after close
+                close: function () {
+                    $(this).remove();
+                }
+            };
+            var id = 'dialogId' + this.dialogIdx;
+            
+            $box = $('#' + id);
+            if (!$box.length) {
+                $box = $('<div id="' + id + '"></div>').hide().appendTo('body');
+                this.dialogIdx++;
+            }
+            $box.dialog($.extend({}, defaults, options));
+            return $box;
+        };
+
+        return DialogManager;
+    })();
+    w.DialogManager = new DialogManager;
+
+})(window);
+</pre></noscript>
+<script src="https://gist.github.com/3849685.js?file=dialogmanager.js"> </script>
+
+<p>And usage.</p>
+
+<noscript><pre>
+var dialog = DialogManager.createDialog({minWidth: 400, title: 'Set some title'});
+dialog.html('Here is the content');
+dialog.dialog('open');
+</pre></noscript>
+<script src="https://gist.github.com/3849685.js?file=usage.js"> </script>
+
+
+                </div>
+            </article>
+        </section>
+        <hr class="blog-posts-separator"/>
+   
+         <section class="blog-posts">
+            <article>
+                <header class="post-header">
                    <a href="/blog/keep-your-files-in-vs-project-included-fast-and-elegant-solution/">
                     <h1 class="post-title">
                         Keep your files in VS project included. Fast and elegant solution
@@ -126,154 +196,6 @@ excludedDirs: bin, obj
 
 <p>Peace.</p>
 
-
-                </div>
-            </article>
-        </section>
-        <hr class="blog-posts-separator"/>
-   
-         <section class="blog-posts">
-            <article>
-                <header class="post-header">
-                   <a href="/blog/powershell-script-to-bring-your-publish-to-the-next-level/">
-                    <h1 class="post-title">
-                        Powershell script to bring your publish to the next level
-                    </h1>
-                    </a>
-                    <p>
-                        <time datetime="2012-08-26 00:00:00 +0200">26 August, 2012</time>
-                    </p>
-                </header>
-                <div class="post-content">
-                     <p>
-How many times during the development stage did your project file break after merge? Everything looks great until you deploy 
-app on test or production server(sic!). You finish your work, go home and spend 
-nice evening with your girlfriend or friends. But next day, during checking new 
-issues from quality team, you might see something like that:
-</p>
-
-<p><img src="/images/blog/powershell_01.png" alt="Powershell_01" title="View not found" />
-</p>
-<p>
-Or complaints why everything looks like shit!
-</p>
-<p>
-What the hell?! That supposed to work perfectly fine! You go to Visual Studio looking for problematic files and baam! Found it!!
-</p>
-<p><img src="/images/blog/powershell_02.png" alt="Powershell_02" title="Solution Explorer" /></p>
-
-<p>
-Your view is not added to the project. It is that simple and silly. It can be any file - view, stylesheet, script file and a bunch of others.
-</p>
-<p>So, we need a simple solution to prevent it from happening again.</p>
-<p>
-Problem is trivial and solution is so. All you have to do is check if all files listed in project catalog are included in project configuration file. You can write simple console app to check it and warn you about files you might miss.
-</p>
-<p>
-But instead, I've prepared a powershell script. This is my first powershell script so any improvements are mostly welcome (please do it directly on <a href="https://gist.github.com/3296391">gist</a>).
-</p>
-
-<noscript><pre>
-#Author: Tomasz Subik http://tsubik.com
-#Date: 8/04/2012 7:35:55 PM
-#Script: FindProjectMissingFiles
-#Description: Looking for missing references to files in project config file
-Param(
-    [parameter(Mandatory=$false)]
-    [alias("d")]
-    $Directory,
-	[parameter(Mandatory=$false)]
-	[alias("s")]
-	$SolutionFile
-	)
-
-Function LookForProjectFile([System.IO.DirectoryInfo] $dir){
-    [System.IO.FileInfo] $projectFile = $dir.GetFiles() | Where { $_.FullName.EndsWith(".csproj") } | Select -First 1
-
-    if ($projectFile){
-        $projectXmlDoc = [xml][system.io.file]::ReadAllText($projectFile.FullName)
-        #[xml]$projectXmlDoc = Get-Content $projectFile.FullName
-        $currentProjectPath = $projectFile.DirectoryName+"\"
-        Write-Host "----Project found: "  $projectFile.Name
-        
-        $nm = New-Object -TypeName System.Xml.XmlNamespaceManager -ArgumentList $projectXmlDoc.NameTable
-        $nm.AddNamespace('x', 'http://schemas.microsoft.com/developer/msbuild/2003')
-        [System.Collections.ArrayList]$filesListedInProjectFile = $projectXmlDoc.SelectNodes('/x:Project/x:ItemGroup/*[self::x:Compile or self::x:Content or self::x:None]/@Include', $nm) | Select-Object Value
-        
-        CheckProjectIntegrity $dir $currentProjectPath $filesListedInProjectFile;
-    }
-    else { $dir.GetDirectories() | ForEach-Object { LookForProjectFile($_); } }
-}
-
-Function CheckProjectIntegrity([System.IO.DirectoryInfo] $dir,[string] $currentProjectPath,  [System.Collections.ArrayList] $filesListedInProjectFile ){
-    $relativeDir = $dir.FullName -replace [regex]::Escape($currentProjectPath)
-    $relativeDir = $relativeDir +"\"
-    #check if folder is bin obj or something
-    if ($relativeDir -match '(bin\\|obj\\).*') { return }
-    
-    $dir.GetFiles()  | ForEach-Object {
-        $relativeProjectFile = $_.FullName -replace [regex]::Escape($currentProjectPath)
-        $match = $false
-        if(DoWeHaveToLookUpForThisFile($relativeProjectFile))
-        {
-            $idx = 0
-            foreach($file in $filesListedInProjectFile)
-            {
-                if($relativeProjectFile.ToLower().Trim() -eq $file.Value.ToLower().Trim()){
-                    $match = $true
-                    break
-                }
-                $idx++
-            }
-            if (-not($match))
-            {
-                Write-Host "Missing file reference: " $relativeProjectFile -ForegroundColor Red
-            }
-            else
-            {
-                $filesListedInProjectFile.RemoveAt($idx)
-            }
-        }
-    }
-    #lookup in sub directories
-    $dir.GetDirectories() | ForEach-Object { CheckProjectIntegrity $_ $currentProjectPath $filesListedInProjectFile }
-}
-
-Function DoWeHaveToLookUpForThisFile($filename)
-{
-    #check file extensions
-    if ($filename -match '^.*\.(user|csproj|aps|pch|vspscc|vssscc|ncb|suo|tlb|tlh|bak|log|lib|sdf)$') { return $false }
-    return $true    
-}
-
-Write-Host '######## Checking for missing references to files started ##############'
-if($SolutionFile){
-	[System.IO.FileInfo] $file = [System.IO.FileInfo] $SolutionFile
-	$Directory = $file.Directory
-}
-LookForProjectFile($Directory)
-Write-Host '######## Checking for missing references to files ends ##############'
-</pre></noscript>
-<script src="https://gist.github.com/3296391.js?file=FindProjectMissingFilesReferences.ps1"> </script>
-
-<p>
-Script is on <a href="https://gist.github.com/3296391">github</a> so you can download it, fork it just do what you want to with it.
-</p>
-<p>
-How you can use it with your current projects?
-</p>
-<p>
-Simple just add script somewhere to your project and I thought using VS package manager console will be most proper way to use it nicely.
-Just run script directly in PM Console with solution directory as a parameter.
-</p>
-<noscript>
-<pre>
-	PM&gt; ./PKEWeb/Powershell/FindProjectMissingFiles.ps1 -s $dte.Solution.FileName
-</pre>
-</noscript>
-<script src="https://gist.github.com/3296391.js?file=PM.ps1"> </script>
-
-<p>ENJOY!</p>
 
                 </div>
             </article>

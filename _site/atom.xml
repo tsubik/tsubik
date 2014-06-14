@@ -2,13 +2,71 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Tomasz Subik</title>
   <link type="application/atom+xml" rel="self" href="http://tsubik.com/atom.xml"/>
-  <updated>2014-06-14T15:57:02+02:00</updated>
+  <updated>2014-06-14T16:46:01+02:00</updated>
   <id>http://tsubik.com/</id>
   <author>
     <name>Tomasz Subik</name>
     <email>tsubik@gmail.com</email>
   </author>
 
+  
+  <entry>
+    <id>http://tsubik.com//blog/generate-migrations-for-db-projects-automate-visual-studio-with-powershell/</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//blog/generate-migrations-for-db-projects-automate-visual-studio-with-powershell/"/>
+    <title>Generate migrations for DB projects - automate Visual Studio with powershell</title>
+    <updated>2014-06-14T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;Recently I was working on providing database migrations solution for a quite large .NET learning management system. It was a shame that there was nothing to automate process of updating production databases and everything must have been done manually. We are using custom ORM solution, VS Database project to keep database schemas in source control and factories to populate databases with static and some test data. Schemas are large - contain hundreds of tables, views and thousand of stored procedures which is why when I was looking for database migrations solution a good maintaining of updating changes in procedures was a must. &lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;I managed to find only one which satisfied these needs - &lt;a href=&quot;https://github.com/chucknorris/roundhouse&quot;&gt;roundhouse&lt;/a&gt;. Unfortunately, there were some problems in applying roundhouse to this project but maybe a detailed migration process is a topic for another post. There were, in short, some changes to be made in rh library and I didn’t like its way of creating database which was “get initial schema and run all migrations”. I preferred to create a “fresh” database directly from schema which would support database project and that’s why I am using both roundhouse (to apply migrations and changes in views/stored procs/functions - and in general keeping database in specific version) and database project (to keep schema in source control and creating database from schema). &lt;/p&gt;
+
+&lt;p&gt;Process of development requires creating differential scripts besides applying changes in database project. Diff scripts do not need to store changes in stored procedures/views/functions because roundhouse ensures that. So, a developer can now update database project directly using designers  in visual studio and save generated diff update script as a new migration. To apply changes to databases he needs to use roundhouse. But manually creating a script with specific name every few minutes is boring and it is therefore first on the list to automate this process.&lt;/p&gt;
+
+&lt;p&gt;What we need is to perform a few simple steps.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Change schema in database project.&lt;/li&gt;
+  &lt;li&gt;Compare database project with database on the developer server. Using schema compare tool we can ignore specific object types e.g. stored procedures/views/functions and save comparison as comparison profile in scmp file.&lt;/li&gt;
+  &lt;li&gt;Generate script with changes and save it to migration folder with specific name eg. with format like YYYYMMddhhmmss_MIGRATION_NAME.sql  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Unfortunately, there is no way, or I cannot find one, to compare database project with database using a command line tool where I could provide a list of types of objects to ignore. That’s why I create powershell script running commands inside Visual Studio.&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/tsubik/34d2d80e90a924fc718c.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;To create migration you must have solution with database project opened.
+Running script will add migration file to your solution (do not mess around in editor while script is running).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/migration_file.jpg&quot; alt=&quot;Migration file added to solution&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Examples:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+PM&amp;gt; .\AddMigration.ps1 –n MigrationName 
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;For other database project in solution&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+PM&amp;gt; .\AddMigration.ps1 –n MigrationName –p NotDefaultDatabaseProject 
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;To generate only empty file for migration&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+PM&amp;gt; .\AddMigrations.ps1 –n MigrationName –of
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This solution is not ideal mainly because is too slow, but it is working and is better than manually doing this.&lt;/p&gt;
+</content>
+  </entry>
   
   <entry>
     <id>http://tsubik.com//blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/</id>
