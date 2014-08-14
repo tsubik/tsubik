@@ -283,6 +283,7 @@ a.view-all-posts:hover
 }
 .post-content code.inline{
     display: inline;
+    color: #68217A;
 }
 
 .blog-posts article .post-readmore
