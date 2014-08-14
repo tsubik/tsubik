@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Open-minded software developer who loves creating useful web apps (C#, asp.net mvc, jQuery, javascript, ruby on rails)">
+    <title>Visual Studio database project migrations</title>
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/Site.css" rel="stylesheet" type="text/css" />
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/pygments.css" rel="stylesheet" type="text/css" />
+    <!-- [if lt IE 9]>
+        <script src="scripts/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+</head>
+<body>
+    <div id="container">
+        <header>
+        <section id="sectionMyName">
+        <a href="/" class="nounderline">
+            <h2>Tomasz Subik</h2>
+            <span id="myTitle">software developer</span>
+        </a>
+        </section>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+            </ul>
+        </nav>
+        </header>
+        <div style="clear: both;">
+        <section class="blog-posts">
+    <article>
+        <header class="post-header">
+            <a href="/blog/visual-studio-database-project-migrations/">
+            <h1 class="post-title">
+                Visual Studio database project migrations
+            </h1>
+            </a>
+            <p>
+                <time datetime="2012-07-30">14 August, 2014</time>
+            </p>
+        </header>
+        <div class="post-content">
+            <p>Visual Studio Database project is a good way to quickly get your database under source control. You will find it very useful especially if your system has a large database schema with a huge pile of stored procedures, functions, views or other database centric stuff. Unfortunately, the deployment strategy brought with it is painful and detached from reality. Automated migration of production database to the latest version is hmmm…. I won’t say impossible. I read about it, but it was like fixing sinking submarine using bare hands. Some people use <a href="https://github.com/chucknorris/roundhouse">roundhouse</a> which is a very nice project to manage database migrations using differential scripts. Below you will find pros/cons of using both of these tools. </p>
+
+<!--more-->
+
+<h2 id="database-project">Database project</h2>
+
+<p>Pros:</p>
+
+<ul>
+  <li>integration with visual studio. You can use a database designer instead of writing “alter/create scripts”</li>
+  <li>performing comparisons with other databases/database projects using schema comparison tool</li>
+  <li>keeping the whole schema in the project </li>
+  <li>creating fresh database from schema instead of performing migrations</li>
+  <li>live validation of database schema - very easy refactoring with visual studio</li>
+</ul>
+
+<p>Cons:</p>
+
+<ul>
+  <li>automated database migrations sucks</li>
+  <li>no database version control solution provided out of the box</li>
+  <li>if you have a large database it takes a lot of memory to hold database schema </li>
+</ul>
+
+<h2 id="roundhouse">Roundhouse</h2>
+
+<p>Pros:</p>
+
+<ul>
+  <li>automate database migrations using differential scripts and updating only procedures/views/functions which have changed</li>
+  <li>database version control solution</li>
+</ul>
+
+<p>Cons:</p>
+
+<ul>
+  <li>creating “clear” database by running all migrations</li>
+  <li>You do not know what database schema looks like unless you create the database</li>
+</ul>
+
+<h2 id="why-not-both">Why not both?</h2>
+
+<p>Why not to use these tools together? Cooperation will bring you something like this:</p>
+
+<p>Pros:</p>
+
+<ul>
+  <li>integration with visual studio. You can use a database designer instead of writing “alter/create scripts” (DB Proj)</li>
+  <li>performing comparisons with other databases/database projects using schema comparison tool (DB Proj)</li>
+  <li>keeping the whole schema in the project  (DB Proj)</li>
+  <li>creating fresh database from schema instead of performing migrations (DB Proj)</li>
+  <li>live validation of database schema - very easy refactoring with visual studio (DB Proj)</li>
+  <li>automate database migrations using differential scripts and updating only procedures/views/functions which have changed (Roundhouse)</li>
+  <li>database version control (Roundhouse)</li>
+</ul>
+
+<p>Cons:</p>
+
+<ul>
+  <li>if you have a large database it takes a lot of memory to hold database schema</li>
+</ul>
+
+<p>Looks better, but of course it needs some additional work to be done because roundhouse does not play well with stored procedures scripts from database project.
+I had to customize rh library to support following:</p>
+
+<ul>
+  <li>schema bound views - I need this because we have that kind of views in the database. </li>
+  <li>database project create/alter script convention for stored procedures/functions - create if not exists then alter instead of only creating object</li>
+  <li>a way to record roundhouse migration in database without actually run it. Baseline mode.</li>
+</ul>
+
+<p>All these things are implemented on my <a href="https://github.com/tsubik/roundhouse/tree/develop">branch develop</a>.</p>
+
+<h2 id="development-process">Development process</h2>
+
+<p>To show how the development process will look like I’ve created a sample solution called <a href="https://github.com/tsubik/Sampletico">Sampletico</a>. Just pretend that <a href="https://github.com/tsubik/Sampletico">Sampletico</a> will be another task management system, for the time it has only user management feature implemented and we will add tasks storage option.
+First we will add <code class="inline">Task</code> class</p>
+
+<div class="highlight"><pre><code class="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">Task</span> <span class="p">:</span> <span class="n">Entity</span>
+<span class="p">{</span>
+	<span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+	<span class="k">public</span> <span class="kt">string</span> <span class="n">Note</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+	<span class="k">public</span> <span class="kt">int</span> <span class="n">Priority</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+	<span class="k">public</span> <span class="n">User</span> <span class="n">CreatedByUser</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+	<span class="k">public</span> <span class="n">User</span> <span class="n">AssignedToUser</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Then using database designer within visual studio we will add <code class="inline">Tasks</code> table</p>
+
+<p><img src="/images/blog/dbmigrations_1.png" alt="Tasks table - Visual Studio Designer" /></p>
+
+<p>We also will need schema comparison profile file which compares our db project with local database. By default we ignore stored procedures/functions/views because roundhouse takes care of them.
+To create migration we will use visual studio schema compare tools either manually or using described by <a href="http://tsubik.com/blog/generate-migrations-for-db-projects-automate-visual-studio-with-powershell">previous post adding migration powershell script</a>.
+Here we have result migration file generated by script and cleaned from unnecessary data.</p>
+
+<div class="highlight"><pre><code class="sql"><span class="k">SET</span> <span class="n">ANSI_NULLS</span><span class="p">,</span> <span class="n">ANSI_PADDING</span><span class="p">,</span> <span class="n">ANSI_WARNINGS</span><span class="p">,</span> <span class="n">ARITHABORT</span><span class="p">,</span> <span class="n">CONCAT_NULL_YIELDS_NULL</span><span class="p">,</span> <span class="n">QUOTED_IDENTIFIER</span> <span class="k">ON</span><span class="p">;</span>
+
+<span class="k">SET</span> <span class="n">NUMERIC_ROUNDABORT</span> <span class="k">OFF</span><span class="p">;</span>
+
+<span class="k">GO</span>
+<span class="n">PRINT</span> <span class="n">N</span><span class="s1">&#39;Creating [dbo].[Tasks]...&#39;</span><span class="p">;</span>
+
+<span class="k">GO</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="p">[</span><span class="n">dbo</span><span class="p">].[</span><span class="n">Tasks</span><span class="p">]</span> <span class="p">(</span>
+    <span class="p">[</span><span class="n">Id</span><span class="p">]</span>               <span class="nb">INT</span>            <span class="k">IDENTITY</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">Note</span><span class="p">]</span>             <span class="n">NVARCHAR</span> <span class="p">(</span><span class="k">MAX</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">Priority</span><span class="p">]</span>         <span class="nb">INT</span>            <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">CreatedByUserId</span><span class="p">]</span>  <span class="nb">INT</span>            <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">AssignedToUserId</span><span class="p">]</span> <span class="nb">INT</span>            <span class="k">NULL</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="n">CLUSTERED</span> <span class="p">([</span><span class="n">Id</span><span class="p">]</span> <span class="k">ASC</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">GO</span>
+<span class="n">PRINT</span> <span class="n">N</span><span class="s1">&#39;Creating [dbo].[FK_Tasks_ToCreatedByUsers]...&#39;</span><span class="p">;</span>
+
+<span class="k">GO</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="p">[</span><span class="n">dbo</span><span class="p">].[</span><span class="n">Tasks</span><span class="p">]</span> <span class="k">WITH</span> <span class="n">NOCHECK</span>
+    <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="p">[</span><span class="n">FK_Tasks_ToCreatedByUsers</span><span class="p">]</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">([</span><span class="n">CreatedByUserId</span><span class="p">])</span> <span class="k">REFERENCES</span> <span class="p">[</span><span class="n">dbo</span><span class="p">].[</span><span class="n">Users</span><span class="p">]</span> <span class="p">([</span><span class="n">Id</span><span class="p">]);</span>
+
+<span class="k">GO</span>
+<span class="n">PRINT</span> <span class="n">N</span><span class="s1">&#39;Creating [dbo].[FK_Tasks_ToAssignedToUsers]...&#39;</span><span class="p">;</span>
+
+<span class="k">GO</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="p">[</span><span class="n">dbo</span><span class="p">].[</span><span class="n">Tasks</span><span class="p">]</span> <span class="k">WITH</span> <span class="n">NOCHECK</span>
+    <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="p">[</span><span class="n">FK_Tasks_ToAssignedToUsers</span><span class="p">]</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">([</span><span class="n">AssignedToUserId</span><span class="p">])</span> <span class="k">REFERENCES</span> <span class="p">[</span><span class="n">dbo</span><span class="p">].[</span><span class="n">Users</span><span class="p">]</span> <span class="p">([</span><span class="n">Id</span><span class="p">]);</span>
+
+<span class="k">GO</span>
+<span class="n">PRINT</span> <span class="n">N</span><span class="s1">&#39;Checking existing data against newly created constraints&#39;</span><span class="p">;</span>
+
+<span class="k">GO</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="p">[</span><span class="n">dbo</span><span class="p">].[</span><span class="n">Tasks</span><span class="p">]</span> <span class="k">WITH</span> <span class="k">CHECK</span> <span class="k">CHECK</span> <span class="k">CONSTRAINT</span> <span class="p">[</span><span class="n">FK_Tasks_ToCreatedByUsers</span><span class="p">];</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="p">[</span><span class="n">dbo</span><span class="p">].[</span><span class="n">Tasks</span><span class="p">]</span> <span class="k">WITH</span> <span class="k">CHECK</span> <span class="k">CHECK</span> <span class="k">CONSTRAINT</span> <span class="p">[</span><span class="n">FK_Tasks_ToAssignedToUsers</span><span class="p">];</span>
+
+<span class="k">GO</span></code></pre></div>
+
+<p>To perform migration we will use roundhouse library. The simplest way is to use rh console application, but I’ve created extra console application to generate sample and static data and perform migrations. To kick migrations <code class="inline">run_migrations.bat</code> was created.</p>
+
+<div class="highlight"><pre><code class="rconsole"><span class="go">@echo off</span>
+<span class="go">set msbuild=%windir%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe</span>
+<span class="go">%msbuild% /m build.xml /v:m /p:VisualStudioVersion=12.0 /t:RebuildDataProject </span>
+
+<span class="go">Sampletico.Data\bin\Release\Sampletico.Data.exe /migrations</span></code></pre></div>
+
+<p><code class="inline">Sampletico.Data.exe</code> is simple.</p>
+
+<div class="highlight"><pre><code class="csharp"><span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">static</span> <span class="kt">string</span> <span class="n">connectionString</span><span class="p">;</span>
+
+    <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">bool</span> <span class="n">migrations</span> <span class="p">=</span> <span class="n">args</span><span class="p">.</span><span class="n">Any</span><span class="p">(</span><span class="n">i</span> <span class="p">=&gt;</span> <span class="n">i</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&quot;/migrations&quot;</span><span class="p">,</span> <span class="n">StringComparison</span><span class="p">.</span><span class="n">InvariantCultureIgnoreCase</span><span class="p">));</span>
+        <span class="kt">bool</span> <span class="n">baseline</span> <span class="p">=</span> <span class="n">args</span><span class="p">.</span><span class="n">Any</span><span class="p">(</span><span class="n">i</span> <span class="p">=&gt;</span> <span class="n">i</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&quot;/baseline&quot;</span><span class="p">,</span> <span class="n">StringComparison</span><span class="p">.</span><span class="n">InvariantCultureIgnoreCase</span><span class="p">));</span>
+        <span class="n">connectionString</span> <span class="p">=</span> <span class="n">ConfigurationManager</span><span class="p">.</span><span class="n">ConnectionStrings</span><span class="p">[</span><span class="s">&quot;Simple.Data.Properties.Settings.DefaultConnectionString&quot;</span><span class="p">].</span><span class="n">ConnectionString</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">migrations</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">RunMigrations</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Baseline</span><span class="p">();</span>
+            <span class="n">GenerateSampleData</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">GenerateSampleData</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">GenerateSampleData</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Generating data....&quot;</span><span class="p">);</span>
+        <span class="n">UserFactory</span><span class="p">.</span><span class="n">Generate</span><span class="p">();</span>
+        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Generating data - DONE&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Baseline</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Running baseline - applying migrations data....&quot;</span><span class="p">);</span>
+        <span class="n">Migrator</span><span class="p">.</span><span class="n">InitMigrationDbStructure</span><span class="p">(</span><span class="n">connectionString</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Running baseline - applying migrations data - DONE&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">RunMigrations</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Running migrations....&quot;</span><span class="p">);</span>
+        <span class="n">Migrator</span><span class="p">.</span><span class="n">MigrateToNewestVersion</span><span class="p">(</span><span class="n">connectionString</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Running migrations - DONE&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Key configuration to run baseline and migration are in <code class="inline">Migrator</code> class.</p>
+
+<div class="highlight"><pre><code class="csharp"><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">Migrator</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="n">MIGRATION_PATH</span> <span class="p">=</span> <span class="n">Path</span><span class="p">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">AppDomain</span><span class="p">.</span><span class="n">CurrentDomain</span><span class="p">.</span><span class="n">BaseDirectory</span><span class="p">,</span>
+        <span class="s">@&quot;..\..\..\SampleticoDB&quot;</span><span class="p">);</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">MigrateToNewestVersion</span><span class="p">(</span><span class="kt">string</span> <span class="n">connectionString</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Migrate</span> <span class="n">migrator</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Migrate</span><span class="p">().</span><span class="n">Set</span><span class="p">(</span><span class="n">c</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">Logger</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ConsoleLogger</span><span class="p">();</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">ConnectionString</span> <span class="p">=</span> <span class="n">connectionString</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">SqlFilesDirectory</span> <span class="p">=</span> <span class="n">MIGRATION_PATH</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">SprocsFolderName</span> <span class="p">=</span> <span class="s">@&quot;dbo\Stored Procedures&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">ViewsFolderName</span> <span class="p">=</span> <span class="s">@&quot;dbo\Views&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">FunctionsFolderName</span> <span class="p">=</span> <span class="s">@&quot;dbo\Functions&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">UpFolderName</span> <span class="p">=</span> <span class="s">@&quot;Scripts\Migrations\up&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">RunBeforeUpFolderName</span> <span class="p">=</span> <span class="s">@&quot;Scripts\Migrations\runbeforeup&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">RunFirstAfterUpFolderName</span> <span class="p">=</span> <span class="s">@&quot;Scripts\Migrations\runfirstafterup&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">DownFolderName</span> <span class="p">=</span> <span class="s">@&quot;Scripts\Migrations\down&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">Restore</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">Silent</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">WithTransaction</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">UsingVSDBProjectScripts</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">});</span>
+
+        <span class="kt">var</span> <span class="n">configuration</span> <span class="p">=</span> <span class="n">migrator</span><span class="p">.</span><span class="n">GetConfiguration</span><span class="p">();</span>
+        <span class="n">ApplicationConfiguraton</span><span class="p">.</span><span class="n">set_defaults_if_properties_are_not_set</span><span class="p">(</span><span class="n">configuration</span><span class="p">);</span>
+        <span class="n">migrator</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">InitMigrationDbStructure</span><span class="p">(</span><span class="kt">string</span> <span class="n">connectionString</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Migrate</span> <span class="n">migrator</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Migrate</span><span class="p">().</span><span class="n">Set</span><span class="p">(</span><span class="n">c</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">Logger</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ConsoleLogger</span><span class="p">();</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">ConnectionString</span> <span class="p">=</span> <span class="n">connectionString</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">SqlFilesDirectory</span> <span class="p">=</span> <span class="n">MIGRATION_PATH</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">SprocsFolderName</span> <span class="p">=</span> <span class="s">@&quot;dbo\Stored Procedures&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">ViewsFolderName</span> <span class="p">=</span> <span class="s">@&quot;dbo\Views&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">FunctionsFolderName</span> <span class="p">=</span> <span class="s">@&quot;dbo\Functions&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">UpFolderName</span> <span class="p">=</span> <span class="s">@&quot;Scripts\Migrations\up&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">RunBeforeUpFolderName</span> <span class="p">=</span> <span class="s">@&quot;Scripts\Migrations\runbeforeup&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">RunFirstAfterUpFolderName</span> <span class="p">=</span> <span class="s">@&quot;Scripts\Migrations\runfirstafterup&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">DownFolderName</span> <span class="p">=</span> <span class="s">@&quot;Scripts\Migrations\down&quot;</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">Restore</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">Silent</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">Baseline</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">WithTransaction</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">UsingVSDBProjectScripts</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">});</span>
+
+        <span class="kt">var</span> <span class="n">configuration</span> <span class="p">=</span> <span class="n">migrator</span><span class="p">.</span><span class="n">GetConfiguration</span><span class="p">();</span>
+        <span class="n">ApplicationConfiguraton</span><span class="p">.</span><span class="n">set_defaults_if_properties_are_not_set</span><span class="p">(</span><span class="n">configuration</span><span class="p">);</span>
+        <span class="n">migrator</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<h2 id="what-about-stored-procedures">What about stored procedures?</h2>
+
+<p>What about them? It is simple, just add or update procedure, function or view in your database project. Roundhouse will take care of the rest.
+Let’s add new procedure to get all tasks</p>
+
+<p><img src="/images/blog/dbmigrations_2.png" alt="Adding new stored procedure - Visual Studio Database Project" /></p>
+
+<p>Now we can run migrations </p>
+
+<p><code>run_migrations.bat</code></p>
+
+<p>And that’s it. To use this method you must to remeber key concepts:</p>
+
+<ol>
+  <li>All changes in database schema must be perfom in visual studio solution, never directly on the database.</li>
+  <li>Changes in all databases must be perform by running migrations.</li>
+  <li>New database could be created by publishing database project and then running rh tools in baseline mode to store information in database that all migrations have already run. </li>
+</ol>
+
+<p>Have fun.</p>
+
+        </div>
+    </article>
+</section>
+        <footer>
+            Copyright (c) 2012 Tomasz Subik
+        </footer>
+        </div>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-11585946-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

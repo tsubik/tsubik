@@ -216,6 +216,11 @@ a.view-all-posts:hover
     background-color: #4A91AC;   
 }
 
+.highlight code
+{
+    font-size: 12px;
+}
+
 .blog-posts { margin-bottom: 15px;}
 .blog-posts article
 {
@@ -283,7 +288,7 @@ a.view-all-posts:hover
 }
 .post-content code.inline{
     display: inline;
-    color: #68217A;
+    color: #2b91af;
 }
 
 .blog-posts article .post-readmore

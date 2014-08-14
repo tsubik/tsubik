@@ -1,0 +1,1013 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Tomasz Subik</title>
+  <link type="application/atom+xml" rel="self" href="http://tsubik.com/atom.xml"/>
+  <updated>2014-08-14T14:02:40+02:00</updated>
+  <id>http://tsubik.com/</id>
+  <author>
+    <name>Tomasz Subik</name>
+    <email>tsubik@gmail.com</email>
+  </author>
+
+  
+  <entry>
+    <id>http://tsubik.com//blog/visual-studio-database-project-migrations/</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//blog/visual-studio-database-project-migrations/"/>
+    <title>Visual Studio database project migrations</title>
+    <updated>2014-08-14T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;Visual Studio Database project is a good way to quickly get your database under source control. You will find it very useful especially if your system has a large database schema with a huge pile of stored procedures, functions, views or other database centric stuff. Unfortunately, the deployment strategy brought with it is painful and detached from reality. Automated migration of production database to the latest version is hmmm…. I won’t say impossible. I read about it, but it was like fixing sinking submarine using bare hands. Some people use &lt;a href=&quot;https://github.com/chucknorris/roundhouse&quot;&gt;roundhouse&lt;/a&gt; which is a very nice project to manage database migrations using differential scripts. Below you will find pros/cons of using both of these tools. &lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;database-project&quot;&gt;Database project&lt;/h2&gt;
+
+&lt;p&gt;Pros:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;integration with visual studio. You can use a database designer instead of writing “alter/create scripts”&lt;/li&gt;
+  &lt;li&gt;performing comparisons with other databases/database projects using schema comparison tool&lt;/li&gt;
+  &lt;li&gt;keeping the whole schema in the project &lt;/li&gt;
+  &lt;li&gt;creating fresh database from schema instead of performing migrations&lt;/li&gt;
+  &lt;li&gt;live validation of database schema - very easy refactoring with visual studio&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Cons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;automated database migrations sucks&lt;/li&gt;
+  &lt;li&gt;no database version control solution provided out of the box&lt;/li&gt;
+  &lt;li&gt;if you have a large database it takes a lot of memory to hold database schema &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;roundhouse&quot;&gt;Roundhouse&lt;/h2&gt;
+
+&lt;p&gt;Pros:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;automate database migrations using differential scripts and updating only procedures/views/functions which have changed&lt;/li&gt;
+  &lt;li&gt;database version control solution&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Cons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;creating “clear” database by running all migrations&lt;/li&gt;
+  &lt;li&gt;You do not know what database schema looks like unless you create the database&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;why-not-both&quot;&gt;Why not both?&lt;/h2&gt;
+
+&lt;p&gt;Why not to use these tools together? Cooperation will bring you something like this:&lt;/p&gt;
+
+&lt;p&gt;Pros:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;integration with visual studio. You can use a database designer instead of writing “alter/create scripts” (DB Proj)&lt;/li&gt;
+  &lt;li&gt;performing comparisons with other databases/database projects using schema comparison tool (DB Proj)&lt;/li&gt;
+  &lt;li&gt;keeping the whole schema in the project  (DB Proj)&lt;/li&gt;
+  &lt;li&gt;creating fresh database from schema instead of performing migrations (DB Proj)&lt;/li&gt;
+  &lt;li&gt;live validation of database schema - very easy refactoring with visual studio (DB Proj)&lt;/li&gt;
+  &lt;li&gt;automate database migrations using differential scripts and updating only procedures/views/functions which have changed (Roundhouse)&lt;/li&gt;
+  &lt;li&gt;database version control (Roundhouse)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Cons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;if you have a large database it takes a lot of memory to hold database schema&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Looks better, but of course it needs some additional work to be done because roundhouse does not play well with stored procedures scripts from database project.
+I had to customize rh library to support following:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;schema bound views - I need this because we have that kind of views in the database. &lt;/li&gt;
+  &lt;li&gt;database project create/alter script convention for stored procedures/functions - create if not exists then alter instead of only creating object&lt;/li&gt;
+  &lt;li&gt;a way to record roundhouse migration in database without actually run it. Baseline mode.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;All these things are implemented on my &lt;a href=&quot;https://github.com/tsubik/roundhouse/tree/develop&quot;&gt;branch develop&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;development-process&quot;&gt;Development process&lt;/h2&gt;
+
+&lt;p&gt;To show how the development process will look like I’ve created a sample solution called &lt;a href=&quot;https://github.com/tsubik/Sampletico&quot;&gt;Sampletico&lt;/a&gt;. Just pretend that &lt;a href=&quot;https://github.com/tsubik/Sampletico&quot;&gt;Sampletico&lt;/a&gt; will be another task management system, for the time it has only user management feature implemented and we will add tasks storage option.
+First we will add &lt;code class=&quot;inline&quot;&gt;Task&lt;/code&gt; class&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Task&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Entity&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Id&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Note&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Priority&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CreatedByUser&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AssignedToUser&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Then using database designer within visual studio we will add &lt;code class=&quot;inline&quot;&gt;Tasks&lt;/code&gt; table&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/dbmigrations_1.png&quot; alt=&quot;Tasks table - Visual Studio Designer&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We also will need schema comparison profile file which compares our db project with local database. By default we ignore stored procedures/functions/views because roundhouse takes care of them.
+To create migration we will use visual studio schema compare tools either manually or using described by &lt;a href=&quot;http://tsubik.com/blog/generate-migrations-for-db-projects-automate-visual-studio-with-powershell&quot;&gt;previous post adding migration powershell script&lt;/a&gt;.
+Here we have result migration file generated by script and cleaned from unnecessary data.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ANSI_NULLS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ANSI_PADDING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ANSI_WARNINGS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARITHABORT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CONCAT_NULL_YIELDS_NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;QUOTED_IDENTIFIER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;SET&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NUMERIC_ROUNDABORT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;OFF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;PRINT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Creating [dbo].[Tasks]...&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;               &lt;span class=&quot;nb&quot;&gt;INT&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;IDENTITY&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Note&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;NVARCHAR&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;MAX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Priority&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;         &lt;span class=&quot;nb&quot;&gt;INT&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CreatedByUserId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;nb&quot;&gt;INT&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AssignedToUserId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;INT&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;PRIMARY&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CLUSTERED&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ASC&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;PRINT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Creating [dbo].[FK_Tasks_ToCreatedByUsers]...&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WITH&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NOCHECK&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;ADD&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CONSTRAINT&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FK_Tasks_ToCreatedByUsers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FOREIGN&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CreatedByUserId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;REFERENCES&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;PRINT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Creating [dbo].[FK_Tasks_ToAssignedToUsers]...&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WITH&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NOCHECK&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;ADD&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CONSTRAINT&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FK_Tasks_ToAssignedToUsers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FOREIGN&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AssignedToUserId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;REFERENCES&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;PRINT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Checking existing data against newly created constraints&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WITH&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CHECK&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CHECK&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CONSTRAINT&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FK_Tasks_ToCreatedByUsers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dbo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WITH&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CHECK&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CHECK&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CONSTRAINT&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FK_Tasks_ToAssignedToUsers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;GO&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To perform migration we will use roundhouse library. The simplest way is to use rh console application, but I’ve created extra console application to generate sample and static data and perform migrations. To kick migrations &lt;code class=&quot;inline&quot;&gt;run_migrations.bat&lt;/code&gt; was created.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;rconsole&quot;&gt;&lt;span class=&quot;go&quot;&gt;@echo off&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;set msbuild=%windir%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;%msbuild% /m build.xml /v:m /p:VisualStudioVersion=12.0 /t:RebuildDataProject &lt;/span&gt;
+
+&lt;span class=&quot;go&quot;&gt;Sampletico.Data\bin\Release\Sampletico.Data.exe /migrations&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;inline&quot;&gt;Sampletico.Data.exe&lt;/code&gt; is simple.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Program&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connectionString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;migrations&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Any&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Equals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;/migrations&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StringComparison&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;InvariantCultureIgnoreCase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;baseline&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Any&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Equals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;/baseline&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StringComparison&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;InvariantCultureIgnoreCase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;connectionString&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConfigurationManager&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ConnectionStrings&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Simple.Data.Properties.Settings.DefaultConnectionString&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ConnectionString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;migrations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;RunMigrations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;baseline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Baseline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;GenerateSampleData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;GenerateSampleData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GenerateSampleData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Generating data....&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;UserFactory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Generate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Generating data - DONE&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Baseline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Running baseline - applying migrations data....&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Migrator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;InitMigrationDbStructure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connectionString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Running baseline - applying migrations data - DONE&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;RunMigrations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Running migrations....&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Migrator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MigrateToNewestVersion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connectionString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Running migrations - DONE&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Key configuration to run baseline and migration are in &lt;code class=&quot;inline&quot;&gt;Migrator&lt;/code&gt; class.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Migrator&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MIGRATION_PATH&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Combine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AppDomain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CurrentDomain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BaseDirectory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;@&amp;quot;..\..\..\SampleticoDB&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;MigrateToNewestVersion&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connectionString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Migrate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;migrator&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Migrate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Logger&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConsoleLogger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ConnectionString&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connectionString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SqlFilesDirectory&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MIGRATION_PATH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SprocsFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;dbo\Stored Procedures&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ViewsFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;dbo\Views&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FunctionsFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;dbo\Functions&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UpFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;Scripts\Migrations\up&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RunBeforeUpFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;Scripts\Migrations\runbeforeup&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RunFirstAfterUpFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;Scripts\Migrations\runfirstafterup&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DownFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;Scripts\Migrations\down&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Restore&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Silent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WithTransaction&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UsingVSDBProjectScripts&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;migrator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetConfiguration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ApplicationConfiguraton&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_defaults_if_properties_are_not_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;migrator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;InitMigrationDbStructure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connectionString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Migrate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;migrator&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Migrate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Logger&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConsoleLogger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ConnectionString&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connectionString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SqlFilesDirectory&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MIGRATION_PATH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SprocsFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;dbo\Stored Procedures&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ViewsFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;dbo\Views&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FunctionsFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;dbo\Functions&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UpFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;Scripts\Migrations\up&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RunBeforeUpFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;Scripts\Migrations\runbeforeup&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RunFirstAfterUpFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;Scripts\Migrations\runfirstafterup&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DownFolderName&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;@&amp;quot;Scripts\Migrations\down&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Restore&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Silent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Baseline&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WithTransaction&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UsingVSDBProjectScripts&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;migrator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetConfiguration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ApplicationConfiguraton&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_defaults_if_properties_are_not_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;migrator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;what-about-stored-procedures&quot;&gt;What about stored procedures?&lt;/h2&gt;
+
+&lt;p&gt;What about them? It is simple, just add or update procedure, function or view in your database project. Roundhouse will take care of the rest.
+Let’s add new procedure to get all tasks&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/dbmigrations_2.png&quot; alt=&quot;Adding new stored procedure - Visual Studio Database Project&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now we can run migrations &lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;run_migrations.bat&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;And that’s it. To use this method you must to remeber key concepts:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;All changes in database schema must be perfom in visual studio solution, never directly on the database.&lt;/li&gt;
+  &lt;li&gt;Changes in all databases must be perform by running migrations.&lt;/li&gt;
+  &lt;li&gt;New database could be created by publishing database project and then running rh tools in baseline mode to store information in database that all migrations have already run. &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Have fun.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//blog/generate-migrations-for-db-projects-automate-visual-studio-with-powershell/</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//blog/generate-migrations-for-db-projects-automate-visual-studio-with-powershell/"/>
+    <title>Generate migrations for DB projects - automate Visual Studio with powershell</title>
+    <updated>2014-06-14T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;Recently I was working on providing database migrations solution for a quite large .NET learning management system. It was a shame that there was nothing to automate process of updating production databases and everything must have been done manually. We are using custom ORM solution, VS Database project to keep database schemas in source control and factories to populate databases with static and some test data. Schemas are large - contain hundreds of tables, views and thousand of stored procedures which is why when I was looking for database migrations solution a good maintaining of updating changes in procedures was a must. &lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;I managed to find only one which satisfied these needs - &lt;a href=&quot;https://github.com/chucknorris/roundhouse&quot;&gt;roundhouse&lt;/a&gt;. Unfortunately, there were some problems in applying roundhouse to this project but maybe a detailed migration process is a topic for another post. There were, in short, some changes to be made in rh library and I didn’t like its way of creating database which was “get initial schema and run all migrations”. I preferred to create a “fresh” database directly from schema which would support database project and that’s why I am using both roundhouse (to apply migrations and changes in views/stored procs/functions - and in general keeping database in specific version) and database project (to keep schema in source control and creating database from schema). &lt;/p&gt;
+
+&lt;p&gt;Process of development requires creating differential scripts besides applying changes in database project. Diff scripts do not need to store changes in stored procedures/views/functions because roundhouse ensures that. So, a developer can now update database project directly using designers  in visual studio and save generated diff update script as a new migration. To apply changes to databases he needs to use roundhouse. But manually creating a script with specific name every few minutes is boring and it is therefore first on the list to automate this process.&lt;/p&gt;
+
+&lt;p&gt;What we need is to perform a few simple steps.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Change schema in database project.&lt;/li&gt;
+  &lt;li&gt;Compare database project with database on the developer server. Using schema compare tool we can ignore specific object types e.g. stored procedures/views/functions and save comparison as comparison profile in scmp file.&lt;/li&gt;
+  &lt;li&gt;Generate script with changes and save it to migration folder with specific name eg. with format like YYYYMMddhhmmss_MIGRATION_NAME.sql  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Unfortunately, there is no way, or I cannot find one, to compare database project with database using a command line tool where I could provide a list of types of objects to ignore. That’s why I create powershell script running commands inside Visual Studio.&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/tsubik/34d2d80e90a924fc718c.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;To create migration you must have solution with database project opened.
+Running script will add migration file to your solution (do not mess around in editor while script is running).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/migration_file.jpg&quot; alt=&quot;Migration file added to solution&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Examples:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+PM&amp;gt; .\AddMigration.ps1 –n MigrationName 
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;For other database project in solution&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+PM&amp;gt; .\AddMigration.ps1 –n MigrationName –p NotDefaultDatabaseProject 
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;To generate only empty file for migration&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+PM&amp;gt; .\AddMigrations.ps1 –n MigrationName –of
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This solution is not ideal mainly because is too slow, but it is working and is better than manually doing this.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/"/>
+    <title>Sass with ASP.NET MVC 4 - Twitter Bootstrap example</title>
+    <updated>2013-01-05T00:00:00+01:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;Many times if I look at css stylesheets of middle and big systems it just makes me cry. Total chaos, code repetition, basically too much css. That’s why css preprocessors were invented. In the .NET world the most popular right now is Less. However, for a long time there is another player on the market - &lt;a href=&quot;http://sass-lang.com&quot;&gt;Sass&lt;/a&gt;. &lt;!--more--&gt;And that is what this post will be about - Sass along with asp.net (no matter mvc or not). If anyone doesn’t know what Sass is, &lt;a href=&quot;http://sass-lang.com&quot;&gt;check it out&lt;/a&gt;. In a nutshell it is CSS preprocessor giving you much more power to create your stylesheets (nesting, mixing, variables, etc.). Blablabla… anyway in many comparisons to less, sass is the winner, but you will choose whichever you like more.
+There are some posts over the Internet describing how to use Sass with asp.net, but I want to show you how I’m using it and what I am avoiding.&lt;/p&gt;
+
+&lt;h2 id=&quot;pre-requirements&quot;&gt;Pre-requirements&lt;/h2&gt;
+
+&lt;p&gt;Simple list what do we need to start playing around Sass:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Sass preprocessor engine&lt;/li&gt;
+  &lt;li&gt;VS syntax highlight&lt;/li&gt;
+  &lt;li&gt;something for debugging in the browser&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;What I am using:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://compass-style.org&quot;&gt;Compass&lt;/a&gt; which using Sass as a preprocessor. You need to &lt;a href=&quot;http://rubyinstaller.org/&quot;&gt;install ruby&lt;/a&gt; envoirement and then simple using your favorite console shell
+&lt;code&gt;gem install compass&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;For syntax highlighting I am using &lt;a href=&quot;http://visualstudiogallery.msdn.microsoft.com/07d54d12-7133-4e15-becb-6f451ea3bea6&quot;&gt;Web Essentials&lt;/a&gt; - I highly recommend this extension. Sass support is a new feature there and soon will be much better.&lt;/li&gt;
+  &lt;li&gt;For development, debugging - Chrome development tools (for firefox users - &lt;a href=&quot;https://addons.mozilla.org/pl/firefox/addon/firesass-for-firebug&quot;&gt;FireSass&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Ok. So what I am avoiding:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Mindscape Web Workbench. Why??
+    &lt;ul&gt;
+      &lt;li&gt;It’s too heavy&lt;/li&gt;
+      &lt;li&gt;“Go Pro” everywhere. I’m sick of it. Want to comment a line in your .scss file using VS’s shortcut - “commenting is only in pro version” - WTF? Are you kidding me?&lt;/li&gt;
+      &lt;li&gt;It using compass so.. do not rely on some commercial tools, when it is soo simple to use what they are using. &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;That’s it&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I recommend installing stuff I am using, but if you do not want install ruby and compass manually and you are “console hater” you can start with Web Workbench (it is using compass so ruby will be installed anyway).&lt;/p&gt;
+
+&lt;h2 id=&quot;lets-rock---basic-app&quot;&gt;Let’s rock - basic app&lt;/h2&gt;
+
+&lt;p&gt;You have everything set up, so let’s play.
+We don’t want to build solution from scratch that’s why we will use twitter bootstrap nuget package.&lt;/p&gt;
+
+&lt;p&gt;First steps.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create new empty MVC 4 project.&lt;/li&gt;
+  &lt;li&gt;Install packages.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+	PM&amp;gt; Install-Package twitter.bootstrap.mvc4
+	PM&amp;gt; Install-Package twitter.bootstrap.mvc4.sample
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/4457378.js?file=install_packages&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;That’s it. Fire up application and see what we got so far.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/twitter_sass1.png&quot; alt=&quot;ASP.NET MVC 4 with Twitter Bootstrap and Sass&quot; title=&quot;ASP.NET MVC 4 with Twitter Bootstrap and Sass&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now our application is using standard css stylesheets. Our goal is to replace them with a Sass files.&lt;/p&gt;
+
+&lt;h2 id=&quot;sass-goodness&quot;&gt;Sass goodness&lt;/h2&gt;
+
+&lt;p&gt;I found out a nice &lt;a href=&quot;https://github.com/jlong/sass-twitter-bootstrap&quot;&gt;port from Less to Sass bootstrap&lt;/a&gt;. Nice job guys! Sure we gonna use it.&lt;/p&gt;
+
+&lt;p&gt;If you have git, simple clone the repo, if you don’t… &lt;a href=&quot;http://msysgit.github.com&quot;&gt;install git&lt;/a&gt; :]. Fine, if you don’t, just download zipped repo.&lt;/p&gt;
+
+&lt;p&gt;Next steps.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Delete all css files in Content folder.&lt;/li&gt;
+  &lt;li&gt;Create Content\Sass\Twitter directory and copy there all files from lib directory of cloned sass twitter port.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Initialize compass project. Open console in root folder of web application.
+&lt;code&gt;
+ compass init
+&lt;/code&gt;
+That will set up default compass project configuration. We need to change it a little bit.
+So now:&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Delete sass and stylesheet folder created in root path.&lt;/li&gt;
+  &lt;li&gt;Edit config.rb file
+    &lt;noscript&gt;&lt;pre&gt;
+     # Set this to the root of your project when deployed:
+     http_path = &quot;/&quot;
+     css_dir = &quot;Content&quot;
+     sass_dir = &quot;Content/sass&quot;
+     images_dir = &quot;Content/images&quot;
+     javascripts_dir = &quot;javascripts&quot;
+ &lt;/pre&gt;&lt;/noscript&gt;
+    &lt;script src=&quot;https://gist.github.com/4457378.js?file=config.rb&quot;&gt; &lt;/script&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Add application.scss file to Content/sass directory
+    &lt;noscript&gt;&lt;pre&gt;
+     @import &quot;compass/reset&quot;;
+     @import &quot;twitter/bootstrap&quot;;
+     @import &quot;twitter/responsive&quot;;
+ &lt;/pre&gt;&lt;/noscript&gt;
+    &lt;script src=&quot;https://gist.github.com/4457378.js?file=application_v1.scss&quot;&gt; &lt;/script&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;So we are using one of compass built-in stylesheet (reset), main twitter bootstrap and reponsive stylesheet.&lt;/p&gt;
+
+&lt;p&gt;Let’s compile ours stylesheets
+&lt;code&gt;compass compile&lt;/code&gt;
+Now in Content directory we have all needed stylesheets.&lt;/p&gt;
+
+&lt;p&gt;Update application layouts to use application.css from Content directory.&lt;/p&gt;
+
+&lt;p&gt;delete followings&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;
+&amp;lt;![CDATA[
+	&amp;lt;link href=&quot;@Styles.Url(&quot;~/content/css&quot;)&quot; rel=&quot;stylesheet&quot;/&amp;gt;
+	&amp;lt;link href=&quot;@Styles.Url(&quot;~/Content/css-responsive&quot;)&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot; /&amp;gt;
+]]&amp;gt;
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/4457378.js?file=layout_1.html&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;add only application.css&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;
+&amp;lt;![CDATA[
+	&amp;lt;link href=&quot;@Styles.Url(&quot;~/Content/application.css&quot;)&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot; /&amp;gt;
+]]&amp;gt;
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/4457378.js?file=layout_2.html&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;Run application to check out if everything is working as it should.&lt;/p&gt;
+
+&lt;h2 id=&quot;playground&quot;&gt;Playground&lt;/h2&gt;
+
+&lt;p&gt;Before you start doing anything using Sass I recommend get familiar with its features - &lt;a href=&quot;http://sass-lang.com/tutorial.html&quot;&gt;Sass tutorial&lt;/a&gt;. After that we can play around.&lt;/p&gt;
+
+&lt;p&gt;I changed “sing-up” page.&lt;/p&gt;
+
+&lt;p&gt;Move inline style from _BootstrapLayout.empty.cshtml layout into application.scss&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+body {
+	padding-top: 40px;
+	padding-bottom: 40px;
+	background-color: #f5f5f5;
+}
+.form-signin {
+	max-width: 300px;
+	padding: 19px 29px 29px;
+	margin: 0 auto 20px;
+	background-color: #fff;
+	border: 1px solid #e5e5e5;
+	-webkit-border-radius: 5px;
+	   -moz-border-radius: 5px;
+	        border-radius: 5px;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+	   -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+	        box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+	margin-bottom: 10px;
+}
+.form-signin input[type=&quot;text&quot;],
+.form-signin input[type=&quot;password&quot;] {
+	font-size: 16px;
+	height: auto;
+	margin-bottom: 15px;
+	padding: 7px 9px;
+}
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/4457378.js?file=application.css&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;Now change it a little bit using sass features (I’m using variables from twitter bootstrap here) and import twitter bootstrap and compass default reset stylesheet.&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;
+@import &quot;compass/reset&quot;;
+@import &quot;twitter/bootstrap&quot;;
+body
+{
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: $white;
+}
+.form-signin
+{
+    max-width: 300px;
+    padding: 19px 29px 29px;
+    margin: 0 auto 20px;
+    background-color: $formActionsBackground;
+    border: 1px solid $inputBorder;
+    @include border-radius($baseBorderRadius);
+    @include box-shadow(inset 0 1px 2px rgba(0,0,0,.05));
+    .form-signin-heading, .checkbox
+    {
+        margin-bottom: 10px;
+    }
+    input[type=&quot;text&quot;], input[type=&quot;password&quot;]
+    {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+    }
+}   
+@import &quot;twitter/responsive&quot;;
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/4457378.js?file=application_v2.scss&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;It will change a little design, but… so what. In this little example I show you usage of variables, mixins and nestings. &lt;/p&gt;
+
+&lt;p&gt;I don’t want to create sass tutorial here, just do what you want, experiment.&lt;/p&gt;
+
+&lt;h2 id=&quot;debugging-sass&quot;&gt;Debugging sass&lt;/h2&gt;
+
+&lt;p&gt;There is something that everyone hates in every code generating languages like coffeescript, typescript, less and sass - troubles with debugging. Browser shows you some errors in specific line of code which have nothing to do with your original development files.&lt;/p&gt;
+
+&lt;p&gt;You can find some solutions to this problem.&lt;/p&gt;
+
+&lt;p&gt;For chrome browser (24+) there is for now an experiment sass support feature. Obtain how to use it - &lt;a href=&quot;http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools&quot;&gt;http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;For firefox you have &lt;a href=&quot;https://addons.mozilla.org/pl/firefox/addon/firesass-for-firebug&quot;&gt;FireSass extension&lt;/a&gt;. You will find instructions on how to use it on &lt;a href=&quot;http://nex-3.com/posts/92-firesass-bridges-the-gap-between-sass-and-firebug&quot;&gt;http://nex-3.com/posts/92-firesass-bridges-the-gap-between-sass-and-firebug&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;This solutions requires adding two config lines to config.rb file&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;
+	sass_options = {:debug_info =&amp;gt; true}
+	output_style = :expanded
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/4457378.js?file=config_v2.rb&quot;&gt; &lt;/script&gt;
+
+&lt;h2 id=&quot;sass-compiling-improvements&quot;&gt;Sass compiling improvements&lt;/h2&gt;
+
+&lt;p&gt;At the end some tips how to improve stylesheet generation.&lt;/p&gt;
+
+&lt;p&gt;Just type in the console&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;compass watch&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;And now everytime if you change something in your sass files, the compass will notice this and your stylesheets will be recompiled.&lt;/p&gt;
+
+&lt;p&gt;You can also execute &lt;code class=&quot;inline&quot;&gt;compass compile&lt;/code&gt; after your project compilation adding this to the end of the project file&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;
+&lt;target name=&quot;AfterCompile&quot; condition=&quot; &#39;$(Configuration)&#39; == &#39;Release&#39; &quot;&gt;
+    &lt;exec command=&quot;compass compile&quot; /&gt;
+    &lt;itemgroup&gt;
+        &lt;content include=&quot;Styles\*.css&quot; /&gt;
+    &lt;/itemgroup&gt;
+&lt;/target&gt;
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/4457378.js?file=project.xml&quot;&gt; &lt;/script&gt;
+
+&lt;h2 id=&quot;full-solution&quot;&gt;Full solution&lt;/h2&gt;
+
+&lt;p&gt;You can find end solution on &lt;a href=&quot;https://github.com/tsubik/aspnet_twitter_sass&quot;&gt;github&lt;/a&gt;. That’s it, for futher reading I recommend &lt;a href=&quot;http://thesassway.com&quot;&gt;The Sass Way&lt;/a&gt;&lt;/p&gt;
+
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//blog/simple-jqueryui-dialogmanager/</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//blog/simple-jqueryui-dialogmanager/"/>
+    <title>Simple jQueryUI DialogManager</title>
+    <updated>2012-10-07T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;Recently I’ve been working on structuring and refactoring javascript code in a middle size application. There are many modal popups, you know popup invoking popup and so on. Many of them were just created on div elements which already exist in the html markup. I thought that it would be a better idea to create these kinds of div elements only if I want to show a dialog using them. The next thing I’d like to achieve is to use default configuration for created dialogs. Also, I want my div element destroyed after closing the dialog.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;Ok. Enough talking. Show me the code.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+;(function(w){
+    var DialogManager = (function(){
+
+        function DialogManager(){
+            this.dialogIdx= 1;    
+        };
+        DialogManager.prototype.createDialog = function(options){
+            var defaults = {
+                modal: true,
+                resizeable: false,
+                autoOpen: false,
+                //removing dialog after close
+                close: function () {
+                    $(this).remove();
+                }
+            };
+            var id = &#39;dialogId&#39; + this.dialogIdx;
+            
+            $box = $(&#39;#&#39; + id);
+            if (!$box.length) {
+                $box = $(&#39;&lt;div id=&quot;&#39; + id + &#39;&quot;&gt;&lt;/div&gt;&#39;).hide().appendTo(&#39;body&#39;);
+                this.dialogIdx++;
+            }
+            $box.dialog($.extend({}, defaults, options));
+            return $box;
+        };
+
+        return DialogManager;
+    })();
+    w.DialogManager = new DialogManager;
+
+})(window);
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/3849685.js?file=dialogmanager.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;And usage.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+var dialog = DialogManager.createDialog({minWidth: 400, title: &#39;Set some title&#39;});
+dialog.html(&#39;Here is the content&#39;);
+dialog.dialog(&#39;open&#39;);
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/3849685.js?file=usage.js&quot;&gt; &lt;/script&gt;
+
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//blog/keep-your-files-in-vs-project-included-fast-and-elegant-solution/</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//blog/keep-your-files-in-vs-project-included-fast-and-elegant-solution/"/>
+    <title>Keep your files in VS project included. Fast and elegant solution</title>
+    <updated>2012-09-22T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;In the previous article I wrote a &lt;a href=&quot;/blog/powershell-script-to-bring-your-publish-to-the-next-level/&quot;&gt;simple powershell script&lt;/a&gt; to find all of the potentially missing file
+references from my Visual Studio project files.&lt;/p&gt;
+
+&lt;p&gt;I realized, however, that the script has some performance issues. For a large solution, it takes quite a few seconds to get the work done.  So, I thought it would be much better to write some kind of library for this job. The fact is, I do not want to write some external tools like desktop application. I want to keep it simple. Simple like… installing the additional modules by &lt;a href=&quot;http://nuget.org/&quot;&gt;nuget&lt;/a&gt;. Oh yeah, so just type some fancy command in package manager console and let it be done.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;Sounds perfect!&lt;/p&gt;
+
+&lt;h2 id=&quot;powershell-cmdlet&quot;&gt;Powershell cmdlet&lt;/h2&gt;
+
+&lt;p&gt;You can write your custom command extension for powershell, it is called “cmdlet”.
+So I wrote one to meet my requirements. 
+This is not a place for a tutorial “How to create custom cmdlet” that’s why if you want to know about it &lt;a href=&quot;http://community.bartdesmet.net/blogs/bart/archive/2008/02/03/easy-windows-powershell-cmdlet-development-and-debugging.aspx&quot;&gt;here you go some some hints&lt;/a&gt; about creating and dubugging cmdlets. &lt;/p&gt;
+
+&lt;h2 id=&quot;vspniff&quot;&gt;VSpniff&lt;/h2&gt;
+
+&lt;p&gt;Let’s focus on my tool. I called it &lt;a href=&quot;https://github.com/tsubik/VSpniff&quot;&gt;VSpniff&lt;/a&gt; – shortcut from Visual Studio project not included files finder. You can download the tool from &lt;a href=&quot;https://github.com/tsubik/VSpniff&quot;&gt;here&lt;/a&gt;. There is also an instruction how to get the tool work in your Visual Studio package manager console.&lt;/p&gt;
+
+&lt;h2 id=&quot;finding-missing-files-references&quot;&gt;Finding missing files references&lt;/h2&gt;
+&lt;p&gt;Ok. So how does this works? Let’s simply assume we have some excluded files in project&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/vspniff_01.png&quot; alt=&quot;excluded files&quot; title=&quot;Excluded files&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;They could be accidentally excluded by bad merge or something and we may not even know about it.
+After installing &lt;a href=&quot;https://github.com/tsubik/VSpniff&quot;&gt;VSpniff&lt;/a&gt; you could use it to avoid such situations. Just type in the PM console&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+PM&amp;gt; Find-MissingFiles
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/3766167.js?file=vspniff_command&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;And here we go&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/vspniff_02.png&quot; alt=&quot;missing files listed&quot; title=&quot;Missing files listed&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;All the missing files listed.&lt;/p&gt;
+
+&lt;h2 id=&quot;configuration&quot;&gt;Configuration&lt;/h2&gt;
+
+&lt;p&gt;Ok. Let assume we do not want to look for .png files in the Images folder  ;]. To do that, just add a config.vspniff file to the Images directory.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+mode: append
+excludedExtensions: png
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/3766167.js?file=vspniff_config&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;Run the tool once again and here we go&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/vspniff_03.png&quot; alt=&quot;missing files listed 2&quot; title=&quot;Missing files listed 2&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Configuration file must have .vspniff extension.&lt;/p&gt;
+
+&lt;p&gt;There is a default configuration in the box (hard coded) to avoid the need of adding any
+configuration files.
+This default configuration looks like that&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+mode: override
+excludedExtensions: user, csproj, aps, pch, vspscc, vssscc, ncb, suo, tlb, tlh, bak, log, lib
+excludedDirs: bin, obj
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/3766167.js?file=vspniff_default_config&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;Ok. So what does it mean?&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+#Mode - it is the way that the module will treat your options
+# append - it will append your options to current options context
+# override - in this and subdirs will only take this file options (unless in subdirs are also some config files)
+#excludedExtensions - files with these extensions will not be listed as missing files
+#excludedDirs - program will not be looking in these locations for missing files
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/3766167.js?file=vspniff_config_description&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;This is it. I hope you will enjoy using this tool and it helps you avoid many bugs.&lt;/p&gt;
+
+&lt;p&gt;Peace.&lt;/p&gt;
+
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//blog/powershell-script-to-bring-your-publish-to-the-next-level/</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//blog/powershell-script-to-bring-your-publish-to-the-next-level/"/>
+    <title>Powershell script to bring your publish to the next level</title>
+    <updated>2012-08-26T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;
+How many times during the development stage did your project file break after merge? Everything looks great until you deploy 
+app on test or production server(sic!). You finish your work, go home and spend 
+nice evening with your girlfriend or friends. But next day, during checking new 
+issues from quality team, you might see something like that:
+&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/powershell_01.png&quot; alt=&quot;Powershell_01&quot; title=&quot;View not found&quot; /&gt;
+&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;
+Or complaints why everything looks like shit!
+&lt;/p&gt;
+&lt;p&gt;
+What the hell?! That supposed to work perfectly fine! You go to Visual Studio looking for problematic files and baam! Found it!!
+&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/blog/powershell_02.png&quot; alt=&quot;Powershell_02&quot; title=&quot;Solution Explorer&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;
+Your view is not added to the project. It is that simple and silly. It can be any file - view, stylesheet, script file and a bunch of others.
+&lt;/p&gt;
+&lt;p&gt;So, we need a simple solution to prevent it from happening again.&lt;/p&gt;
+&lt;p&gt;
+Problem is trivial and solution is so. All you have to do is check if all files listed in project catalog are included in project configuration file. You can write simple console app to check it and warn you about files you might miss.
+&lt;/p&gt;
+&lt;p&gt;
+But instead, I&#39;ve prepared a powershell script. This is my first powershell script so any improvements are mostly welcome (please do it directly on &lt;a href=&quot;https://gist.github.com/3296391&quot;&gt;gist&lt;/a&gt;).
+&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;
+#Author: Tomasz Subik http://tsubik.com
+#Date: 8/04/2012 7:35:55 PM
+#Script: FindProjectMissingFiles
+#Description: Looking for missing references to files in project config file
+Param(
+    [parameter(Mandatory=$false)]
+    [alias(&quot;d&quot;)]
+    $Directory,
+	[parameter(Mandatory=$false)]
+	[alias(&quot;s&quot;)]
+	$SolutionFile
+	)
+
+Function LookForProjectFile([System.IO.DirectoryInfo] $dir){
+    [System.IO.FileInfo] $projectFile = $dir.GetFiles() | Where { $_.FullName.EndsWith(&quot;.csproj&quot;) } | Select -First 1
+
+    if ($projectFile){
+        $projectXmlDoc = [xml][system.io.file]::ReadAllText($projectFile.FullName)
+        #[xml]$projectXmlDoc = Get-Content $projectFile.FullName
+        $currentProjectPath = $projectFile.DirectoryName+&quot;\&quot;
+        Write-Host &quot;----Project found: &quot;  $projectFile.Name
+        
+        $nm = New-Object -TypeName System.Xml.XmlNamespaceManager -ArgumentList $projectXmlDoc.NameTable
+        $nm.AddNamespace(&#39;x&#39;, &#39;http://schemas.microsoft.com/developer/msbuild/2003&#39;)
+        [System.Collections.ArrayList]$filesListedInProjectFile = $projectXmlDoc.SelectNodes(&#39;/x:Project/x:ItemGroup/*[self::x:Compile or self::x:Content or self::x:None]/@Include&#39;, $nm) | Select-Object Value
+        
+        CheckProjectIntegrity $dir $currentProjectPath $filesListedInProjectFile;
+    }
+    else { $dir.GetDirectories() | ForEach-Object { LookForProjectFile($_); } }
+}
+
+Function CheckProjectIntegrity([System.IO.DirectoryInfo] $dir,[string] $currentProjectPath,  [System.Collections.ArrayList] $filesListedInProjectFile ){
+    $relativeDir = $dir.FullName -replace [regex]::Escape($currentProjectPath)
+    $relativeDir = $relativeDir +&quot;\&quot;
+    #check if folder is bin obj or something
+    if ($relativeDir -match &#39;(bin\\|obj\\).*&#39;) { return }
+    
+    $dir.GetFiles()  | ForEach-Object {
+        $relativeProjectFile = $_.FullName -replace [regex]::Escape($currentProjectPath)
+        $match = $false
+        if(DoWeHaveToLookUpForThisFile($relativeProjectFile))
+        {
+            $idx = 0
+            foreach($file in $filesListedInProjectFile)
+            {
+                if($relativeProjectFile.ToLower().Trim() -eq $file.Value.ToLower().Trim()){
+                    $match = $true
+                    break
+                }
+                $idx++
+            }
+            if (-not($match))
+            {
+                Write-Host &quot;Missing file reference: &quot; $relativeProjectFile -ForegroundColor Red
+            }
+            else
+            {
+                $filesListedInProjectFile.RemoveAt($idx)
+            }
+        }
+    }
+    #lookup in sub directories
+    $dir.GetDirectories() | ForEach-Object { CheckProjectIntegrity $_ $currentProjectPath $filesListedInProjectFile }
+}
+
+Function DoWeHaveToLookUpForThisFile($filename)
+{
+    #check file extensions
+    if ($filename -match &#39;^.*\.(user|csproj|aps|pch|vspscc|vssscc|ncb|suo|tlb|tlh|bak|log|lib|sdf)$&#39;) { return $false }
+    return $true    
+}
+
+Write-Host &#39;######## Checking for missing references to files started ##############&#39;
+if($SolutionFile){
+	[System.IO.FileInfo] $file = [System.IO.FileInfo] $SolutionFile
+	$Directory = $file.Directory
+}
+LookForProjectFile($Directory)
+Write-Host &#39;######## Checking for missing references to files ends ##############&#39;
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/3296391.js?file=FindProjectMissingFilesReferences.ps1&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;
+Script is on &lt;a href=&quot;https://gist.github.com/3296391&quot;&gt;github&lt;/a&gt; so you can download it, fork it just do what you want to with it.
+&lt;/p&gt;
+&lt;p&gt;
+How you can use it with your current projects?
+&lt;/p&gt;
+&lt;p&gt;
+Simple just add script somewhere to your project and I thought using VS package manager console will be most proper way to use it nicely.
+Just run script directly in PM Console with solution directory as a parameter.
+&lt;/p&gt;
+&lt;noscript&gt;
+&lt;pre&gt;
+	PM&amp;gt; ./PKEWeb/Powershell/FindProjectMissingFiles.ps1 -s $dte.Solution.FileName
+&lt;/pre&gt;
+&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/3296391.js?file=PM.ps1&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;ENJOY!&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//blog/new-personal-website-released/</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//blog/new-personal-website-released/"/>
+    <title>New personal website released</title>
+    <updated>2012-08-23T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;
+Finally I&#39;ve found some time to refresh my personal website. Nothing changed here for a years and the blog was already dead. Even if I liked old design of my website I decided to change it definitely. It was looking too darkly, too gloomy and had many unnecessary graphics elements which could be swapped by simple text using proper fonts. The next problem was lack of support for mobile devices, the page was not adapting to device screen at all.
+&lt;/p&gt;
+&lt;!--more--&gt;
+&lt;p&gt;&lt;img src=&quot;/images/blog/mysite_01.png&quot; alt=&quot;Old-site-design&quot; title=&quot;Old site design&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;
+As I am a web developer I&#39;ve decided not to use any CMS solution to build me site (simply I don&#39;t need it). Going further I&#39;ve decided to my website be a completely static html site.
+&lt;/p&gt;
+&lt;p&gt;
+So I&#39;ve made a list of requirement my site must meet:
+&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+	&lt;li&gt;Be static and easily to modify.&lt;br /&gt;
+To meet this I am using &lt;a href=&quot;http://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt; tool built in Ruby. This is a static site generation tool, allowing you to use layouts, templates and many nice features. Building site with &lt;a href=&quot;http://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt; could be a topic for another blog post, I just do not want to describe it here. You can check out a code of this site on &lt;a href=&quot;http://github.com/tsubik/tsubik&quot;&gt;github&lt;/a&gt;. Firstly I was trying playing with some Jekyll .NET Port library called &lt;a href=&quot;https://github.com/Code52/pretzel&quot;&gt;Pretzel&lt;/a&gt;, but after having so many troubles with it, I decided to leave it at this moment.
+&lt;/li&gt;
+	&lt;li&gt;
+	Have a responsive design to adopt to mobile devices screens.
+	&lt;/li&gt;
+	&lt;li&gt;
+	Be bright, simple and without any unnecessary fireworks.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;
+I think I met these requirements so I hope you will like my new design. Enjoy.
+&lt;/p&gt;
+&lt;p&gt;
+	Check this site out on &lt;a href=&quot;http://github.com/tsubik/tsubik&quot;&gt;Github&lt;/a&gt;
+&lt;/p&gt;
+
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//projects/sfasystem</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//projects/sfasystem"/>
+    <title>Sales force automation system</title>
+    <updated>2012-08-04T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;
+Mobile sales system is a distributed SFA solution to support sale process. This software is dedicated to companies having a strong retail and distribution structure. The system allows you to place orders from anywhere in the world using mobile application running on Pocket PC or web application accessible from any web browser.
+&lt;/p&gt;
+&lt;p&gt;You can check out whole project on &lt;a href=&quot;https://github.com/tsubik/SFASystem&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;
+Technologies: 
+C#, ASP.NET, Compact Framework, NHibernate, Log4NET, SQL Server 2008, SQL Server Compact Edition.
+&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//projects/modio</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//projects/modio"/>
+    <title>Modio.pl</title>
+    <updated>2012-08-04T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;
+I am working on &lt;a href=&quot;http://modio.pl&quot;&gt;modio.pl&lt;/a&gt; custom e-commerce solution.
+&lt;/p&gt;
+&lt;p&gt;
+Technologies: 
+C#, ASP.NET, NHibernate, Log4NET, SQL Server 2008
+&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <id>http://tsubik.com//projects/sfasystem</id>
+    <link type="text/html" rel="alternate" href="http://tsubik.com//projects/sfasystem"/>
+    <title>ITRS - Interactive Temperature Regulation System</title>
+    <updated>2012-08-04T00:00:00+02:00</updated>
+    <author>
+      <name>Tomasz Subik</name>
+      <uri>http://tsubik.com/</uri>
+    </author>
+    <content type="html">&lt;p&gt;
+ITRS system was developed at the request of KAEL company delivering temperature regulation systems. The system is client-server architecture solution giving a comfort to work with electronic drivers, accessing parameters and current temperature via a local network and Internet.
+&lt;/p&gt;
+&lt;p&gt;
+Technologies: 
+C#, .NET Framework, Log4NET, Remoting.
+&lt;/p&gt;
+</content>
+  </entry>
+  
+</feed>
