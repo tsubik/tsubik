@@ -7,7 +7,7 @@ body {
     background-color: #ffffff;
     font-size: 18px;
     line-height: 1.5;
-    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    font-family: "Open Sans", Verdana, Helvetica, Sans-Serif;
     margin: 0;
     padding: 0;
     color: #000000;
@@ -183,7 +183,7 @@ p.mailme
 div#hireMe
 {
     float:left;
-    padding: 30px;
+    padding: 30px 10px 30px 10px;
 }
 .mailme .leftCol
 {
@@ -251,7 +251,7 @@ a.view-all-posts:hover
     font-size: 22px;
 }
 .blog-posts article .post-content a{
-    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    font-family: "Open Sans", Verdana, Helvetica, Sans-Serif;
     color: #A00;
 }
 .blog-posts article .post-content a:hover{
@@ -346,7 +346,7 @@ hr.blog-posts-separator
     float: left;
 }
 .projects-small article a{
-        font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+        font-family: "Open Sans", Verdana, Helvetica, Sans-Serif;
     color: #A00;
 }
 .project-small-content-wrap
