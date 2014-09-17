@@ -38,6 +38,88 @@
          <section class="blog-posts">
             <article>
                 <header class="post-header">
+                   <a href="/blog/ionic-geofence-example-application/">
+                    <h1 class="post-title">
+                        Ionic geofence example application
+                    </h1>
+                    </a>
+                    <p>
+                        <time datetime="2014-09-17 00:00:00 +0200">17 September, 2014</time>
+                    </p>
+                </header>
+                <div class="post-content">
+                     <p>For some month or two I left the .NET world and spent more time exploring new horizons, especially mobile development stuff. I had an idea of mobile application and now have time to make it come true. After initial research I decided to build a hybrid application which means the whole thing runs inside WebView component on the device. That approach allow me to use javascript and <a href="https://angularjs.org/">angularjs</a>. The last thing I needed was some CSS/JS framework to manage visual layer and friend of my came with help suggesting to look at <a href="http://ionicframework.com/">ionic</a>. </p>
+
+
+
+<h2 id="ionichttpionicframeworkcom"><a href="http://ionicframework.com/">Ionic</a></h2>
+
+<p>What is ionic? </p>
+
+<blockquote>
+  <p>Ionic is a powerful HTML5 native app development framework that helps you build native-feeling mobile apps all with web technologies like HTML, CSS, and Javascript.</p>
+
+  <p>Ionic is focused mainly on the look and feel, and UI interaction of your app. That means we aren’t a replacement for PhoneGap or your favorite Javascript framework. Instead, Ionic simply fits in well with these projects in order to simplify one big part of your app: the front end</p>
+</blockquote>
+
+<blockquote>
+  <p>Ionic currently requires AngularJS in order to work at its full potential</p>
+</blockquote>
+
+<p>Ionic is develop by company <a href="http://drifty.com/">drifty</a> and as they claim they are well founded so you do not have to worry it will be gone within few months.</p>
+
+<h2 id="about-the-example-app">About the example app</h2>
+
+<p>Why example? Because I am in the middle of development and there is nothing good to show in context of original application that why I decided to create sample project that will show one of the features which is geofencing.</p>
+
+<h2 id="geofencing">Geofencing</h2>
+
+<p>Geofencing is a simple idea of creating and monitoring virtual perimeter for a real world geographic area. Geofence could be any shaped area, rectangular, circural, polygon everything depends on implementation. Geofencing could be used to set an alarm if someone enter/exit monitored region or dwell for certain time within. It could be used to notify user about promotions, cool places around or simply to remind to do groceries when you are near the store. </p>
+
+<h2 id="geofencing-on-mobile-devices">Geofencing on mobile devices</h2>
+
+<p>Currently as I know, geofences are implemented on mainstream smartphone platforms on the market - Android (via <a href="https://developer.android.com/google/play-services/location.html">Google Play Location Services</a>), IOS (via <a href="https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CoreLocation_Framework/_index.html">Core Location Framework</a>) and Windows Phone 8.1. </p>
+
+<p>I decided to build my app hybrid and geofences are implemented on the platform native layer that why there is a need to use special cordova plugin which will be bridge between my js app code and native libraries.</p>
+
+<h2 id="cordova-geofence-plugin">Cordova geofence plugin</h2>
+
+<p>I was looking for a plugin to manage geofences but could not find anything that is why I came up with my own <a href="https://github.com/tsubik/cordova-plugin-geofence">cordova geofence plugin</a> which have some nice features:</p>
+
+<ul>
+  <li>set, remove geofence (of course :))</li>
+  <li>geofences persist after device reboot - no need to start an app, geofences are monitored instantly after device rebooting</li>
+  <li>notifications - when you click on notification your app will be started, you can also pass some data to app to for example open specific page</li>
+  <li>and much more coming soon</li>
+</ul>
+
+<p>As I am writing this I only support Android platform but IOS and WP 8.1 will be supported soon.</p>
+
+<h2 id="example-app">Example app</h2>
+
+<p>For the sake of simplicity after long introduction I want to show just couple of screenshots with short description.</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/1286444/4302807/604c7c5e-3e5e-11e4-87df-99b22abffdc8.jpg" alt="Ionic geofence application" /></p>
+
+<p>The app is build with <a href="https://angularjs.org/">angularjs</a> and <a href="http://ionicframework.com/">Ionic framework</a> and have some nice features:</p>
+
+<ul>
+  <li>add, remove circular geofences with radius, notification text and transition type</li>
+  <li>using leaflet open street map by <a href="https://github.com/tombatossals/angular-leaflet-directive">angular leaflet directive</a></li>
+  <li>application notify I you enter/exit monitored geofence</li>
+  <li>if you click on notification app will start and go to the details of triggered geofence. </li>
+</ul>
+
+<p><a href="https://github.com/tsubik/ionic-geofence">Check it out on the github</a>. Instruction and how to install application are also there.</p>
+
+                </div>
+            </article>
+        </section>
+        <hr class="blog-posts-separator"/>
+   
+         <section class="blog-posts">
+            <article>
+                <header class="post-header">
                    <a href="/blog/visual-studio-database-project-migrations/">
                     <h1 class="post-title">
                         Visual Studio database project migrations
@@ -320,71 +402,6 @@ Let’s add new procedure to get all tasks</p>
 </ol>
 
 <p>Have fun.</p>
-
-                </div>
-            </article>
-        </section>
-        <hr class="blog-posts-separator"/>
-   
-         <section class="blog-posts">
-            <article>
-                <header class="post-header">
-                   <a href="/blog/generate-migrations-for-db-projects-automate-visual-studio-with-powershell/">
-                    <h1 class="post-title">
-                        Generate migrations for DB projects - automate Visual Studio with powershell
-                    </h1>
-                    </a>
-                    <p>
-                        <time datetime="2014-06-14 00:00:00 +0200">14 June, 2014</time>
-                    </p>
-                </header>
-                <div class="post-content">
-                     <p>Recently I was working on providing database migrations solution for a quite large .NET learning management system. It was a shame that there was nothing to automate process of updating production databases and everything must have been done manually. We are using custom ORM solution, VS Database project to keep database schemas in source control and factories to populate databases with static and some test data. Schemas are large - contain hundreds of tables, views and thousand of stored procedures which is why when I was looking for database migrations solution a good maintaining of updating changes in procedures was a must. </p>
-
-
-
-<h2 id="solution">Solution</h2>
-
-<p>I managed to find only one which satisfied these needs - <a href="https://github.com/chucknorris/roundhouse">roundhouse</a>. Unfortunately, there were some problems in applying roundhouse to this project but maybe a detailed migration process is a topic for another post. There were, in short, some changes to be made in rh library and I didn’t like its way of creating database which was “get initial schema and run all migrations”. I preferred to create a “fresh” database directly from schema which would support database project and that’s why I am using both roundhouse (to apply migrations and changes in views/stored procs/functions - and in general keeping database in specific version) and database project (to keep schema in source control and creating database from schema). </p>
-
-<p>Process of development requires creating differential scripts besides applying changes in database project. Diff scripts do not need to store changes in stored procedures/views/functions because roundhouse ensures that. So, a developer can now update database project directly using designers  in visual studio and save generated diff update script as a new migration. To apply changes to databases he needs to use roundhouse. But manually creating a script with specific name every few minutes is boring and it is therefore first on the list to automate this process.</p>
-
-<p>What we need is to perform a few simple steps.</p>
-
-<ol>
-  <li>Change schema in database project.</li>
-  <li>Compare database project with database on the developer server. Using schema compare tool we can ignore specific object types e.g. stored procedures/views/functions and save comparison as comparison profile in scmp file.</li>
-  <li>Generate script with changes and save it to migration folder with specific name eg. with format like YYYYMMddhhmmss_MIGRATION_NAME.sql  </li>
-</ol>
-
-<p>Unfortunately, there is no way, or I cannot find one, to compare database project with database using a command line tool where I could provide a list of types of objects to ignore. That’s why I create powershell script running commands inside Visual Studio.</p>
-
-<script src="https://gist.github.com/tsubik/34d2d80e90a924fc718c.js"></script>
-
-<p>To create migration you must have solution with database project opened.
-Running script will add migration file to your solution (do not mess around in editor while script is running).</p>
-
-<p><img src="/images/blog/migration_file.jpg" alt="Migration file added to solution" /></p>
-
-<p>Examples:</p>
-
-<p><code>
-PM&gt; .\AddMigration.ps1 –n MigrationName 
-</code></p>
-
-<p>For other database project in solution</p>
-
-<p><code>
-PM&gt; .\AddMigration.ps1 –n MigrationName –p NotDefaultDatabaseProject 
-</code></p>
-
-<p>To generate only empty file for migration</p>
-
-<p><code>
-PM&gt; .\AddMigrations.ps1 –n MigrationName –of
-</code></p>
-
-<p>This solution is not ideal mainly because is too slow, but it is working and is better than manually doing this.</p>
 
                 </div>
             </article>
