@@ -291,6 +291,17 @@ a.view-all-posts:hover
     color: #2b91af;
 }
 
+.post-content blockquote
+{
+    border-bottom: 3px double #DDD;
+    border-top: 3px double #DDD;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.35em;
+    margin: 1.5em auto;
+    padding: 1em 1em;
+}
+
 .blog-posts article .post-readmore
 {
     margin-top: 5px;
