@@ -6,9 +6,68 @@
     <atom:link href="http://domain/rss.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-au</language>
-    <pubDate>Wed, 17 Sep 2014 14:09:53 +0200</pubDate>
-    <lastBuildDate>Wed, 17 Sep 2014 14:09:53 +0200</lastBuildDate>
+    <pubDate>Sat, 27 Sep 2014 16:54:28 +0200</pubDate>
+    <lastBuildDate>Sat, 27 Sep 2014 16:54:28 +0200</lastBuildDate>
 
+    
+    <item>
+      <title>Port your cordova multi-platform hybrid app to Windows Phone 8.1</title>
+      <link>http://domain/blog/port-your-cordova-multi-platform-hybrid-app-to-windows-phone-8.1/</link>
+      <pubDate>Sat, 27 Sep 2014 00:00:00 +0200</pubDate>
+      <author>Author</author>
+      <guid>http://domain/blog/port-your-cordova-multi-platform-hybrid-app-to-windows-phone-8.1/</guid>
+      <description>&lt;p&gt;Apache Cordova team announced official support for Windows Phone 8.1 platform in &lt;a href=&quot;http://cordova.apache.org/announcements/2014/09/22/cordova-361.html&quot;&gt;version 3.6.3&lt;/a&gt;. Is it end of the agony for developers wanting to port their hybrid applications to Microsoft phone platform? I have some ionic application so let’s find out.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;adding-platform&quot;&gt;Adding platform&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;
+cordova platform add windows
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Why windows? Because of the support for some thing called ‘Universal App’, which means you can develop app once and run it on Windows 8, Windows 8.1 and Windows Phone 8.1. If you look at the created solution, there are few projects targeting different platforms and the common codebase.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blog/universalapp_structure.png&quot; alt=&quot;Universal App structure&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;First thought - “Great I will have Windows desktop app also with some little efforts”. Let’s run the app on emulator (be aware of special switches between target platforms –phone –win)&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+cordova run windows -- --phone
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;And… &lt;strong&gt;It is not working :(&lt;/strong&gt;. App crashes after open, I did not know what happened.&lt;/p&gt;
+
+&lt;h2 id=&quot;visual-studio-for-rescue&quot;&gt;Visual Studio for rescue&lt;/h2&gt;
+
+&lt;p&gt;Running application from Visual Studio will show us what actually happens&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;0x800c001c - JavaScript runtime error: Unable to add dynamic content. A script attempted to inject dynamic content, or elements previously modified dynamically, that might be unsafe. For example, using the innerHTML property to add script or malformed HTML will generate this exception. Use the htoStaticHTML method to filter dynamic content, or explicitly create elements and attributes with a method such as createElement.  For more information, see &lt;a href=&quot;http://go.microsoft.com/fwlink/?LinkID=247104&quot;&gt;http://go.microsoft.com/fwlink/?LinkID=247104&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;What!? Following link from error message you find out about automatic script filtering, manipulating DOM in ‘secure way’ and much more. That means jquery - doesn’t works, angularjs - doesn’t works, ionic - doesn’t works, your code - probably doesn’t work. You have to change all ‘insecure’ parts of libraries code due to get them works. But there are many more restrictions developing WinJS applications and right now If you want to create app this way you will have to follow Microsoft rules. So I gave up for now and I am looking forward to better days using Universal App.&lt;/p&gt;
+
+&lt;h2 id=&quot;so-what-now&quot;&gt;So what now?&lt;/h2&gt;
+
+&lt;p&gt;Another approach which I prefer and &lt;strong&gt;it is working for my Ionic application&lt;/strong&gt; is using old wp8 platform.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+cordova platform add wp8
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then follow these few steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Retarget to Windows Phone 8.1. Open solution in visual studio, project properties.&lt;img src=&quot;/images/blog/vs_retarget.png&quot; alt=&quot;VS retarget&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;If you are not using Cordova 3.6.3 change all “execScript” to “eval” for the cordovalib&lt;/li&gt;
+  &lt;li&gt;Replace XHRHelper.cs with &lt;a href=&quot;https://gist.github.com/tsubik/17598d9e142a6876a300&quot;&gt;this one&lt;/a&gt; (I found it out somewhere on the web)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;That’s it! Now you can run emulator from Visual Studio and application works. It might not look like the same as on other devices you have to adapt it to IE11 :/.&lt;/p&gt;
+
+</description>
+    </item>
     
     <item>
       <title>Ionic geofence example application</title>

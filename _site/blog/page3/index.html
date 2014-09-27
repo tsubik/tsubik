@@ -38,6 +38,276 @@
          <section class="blog-posts">
             <article>
                 <header class="post-header">
+                   <a href="/blog/sass-with-aspnet-mvc4-twitter-bootstrap-example/">
+                    <h1 class="post-title">
+                        Sass with ASP.NET MVC 4 - Twitter Bootstrap example
+                    </h1>
+                    </a>
+                    <p>
+                        <time datetime="2013-01-05 00:00:00 +0100">05 January, 2013</time>
+                    </p>
+                </header>
+                <div class="post-content">
+                     <p>Many times if I look at css stylesheets of middle and big systems it just makes me cry. Total chaos, code repetition, basically too much css. That’s why css preprocessors were invented. In the .NET world the most popular right now is Less. However, for a long time there is another player on the market - <a href="http://sass-lang.com">Sass</a>. And that is what this post will be about - Sass along with asp.net (no matter mvc or not). If anyone doesn’t know what Sass is, <a href="http://sass-lang.com">check it out</a>. In a nutshell it is CSS preprocessor giving you much more power to create your stylesheets (nesting, mixing, variables, etc.). Blablabla… anyway in many comparisons to less, sass is the winner, but you will choose whichever you like more.
+There are some posts over the Internet describing how to use Sass with asp.net, but I want to show you how I’m using it and what I am avoiding.</p>
+
+<h2 id="pre-requirements">Pre-requirements</h2>
+
+<p>Simple list what do we need to start playing around Sass:</p>
+
+<ul>
+  <li>Sass preprocessor engine</li>
+  <li>VS syntax highlight</li>
+  <li>something for debugging in the browser</li>
+</ul>
+
+<p>What I am using:</p>
+
+<ul>
+  <li><a href="http://compass-style.org">Compass</a> which using Sass as a preprocessor. You need to <a href="http://rubyinstaller.org/">install ruby</a> envoirement and then simple using your favorite console shell
+<code>gem install compass</code></li>
+  <li>For syntax highlighting I am using <a href="http://visualstudiogallery.msdn.microsoft.com/07d54d12-7133-4e15-becb-6f451ea3bea6">Web Essentials</a> - I highly recommend this extension. Sass support is a new feature there and soon will be much better.</li>
+  <li>For development, debugging - Chrome development tools (for firefox users - <a href="https://addons.mozilla.org/pl/firefox/addon/firesass-for-firebug">FireSass</a>)</li>
+</ul>
+
+<p>Ok. So what I am avoiding:</p>
+
+<ul>
+  <li>Mindscape Web Workbench. Why??
+    <ul>
+      <li>It’s too heavy</li>
+      <li>“Go Pro” everywhere. I’m sick of it. Want to comment a line in your .scss file using VS’s shortcut - “commenting is only in pro version” - WTF? Are you kidding me?</li>
+      <li>It using compass so.. do not rely on some commercial tools, when it is soo simple to use what they are using. </li>
+    </ul>
+  </li>
+  <li>That’s it</li>
+</ul>
+
+<p>I recommend installing stuff I am using, but if you do not want install ruby and compass manually and you are “console hater” you can start with Web Workbench (it is using compass so ruby will be installed anyway).</p>
+
+<h2 id="lets-rock---basic-app">Let’s rock - basic app</h2>
+
+<p>You have everything set up, so let’s play.
+We don’t want to build solution from scratch that’s why we will use twitter bootstrap nuget package.</p>
+
+<p>First steps.</p>
+
+<ol>
+  <li>Create new empty MVC 4 project.</li>
+  <li>Install packages.</li>
+</ol>
+
+<noscript><pre>
+	PM&gt; Install-Package twitter.bootstrap.mvc4
+	PM&gt; Install-Package twitter.bootstrap.mvc4.sample
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=install_packages"> </script>
+
+<p>That’s it. Fire up application and see what we got so far.</p>
+
+<p><img src="/images/blog/twitter_sass1.png" alt="ASP.NET MVC 4 with Twitter Bootstrap and Sass" title="ASP.NET MVC 4 with Twitter Bootstrap and Sass" /></p>
+
+<p>Now our application is using standard css stylesheets. Our goal is to replace them with a Sass files.</p>
+
+<h2 id="sass-goodness">Sass goodness</h2>
+
+<p>I found out a nice <a href="https://github.com/jlong/sass-twitter-bootstrap">port from Less to Sass bootstrap</a>. Nice job guys! Sure we gonna use it.</p>
+
+<p>If you have git, simple clone the repo, if you don’t… <a href="http://msysgit.github.com">install git</a> :]. Fine, if you don’t, just download zipped repo.</p>
+
+<p>Next steps.</p>
+
+<ol>
+  <li>Delete all css files in Content folder.</li>
+  <li>Create Content\Sass\Twitter directory and copy there all files from lib directory of cloned sass twitter port.</li>
+  <li>
+    <p>Initialize compass project. Open console in root folder of web application.
+<code>
+ compass init
+</code>
+That will set up default compass project configuration. We need to change it a little bit.
+So now:</p>
+  </li>
+  <li>Delete sass and stylesheet folder created in root path.</li>
+  <li>Edit config.rb file
+    <noscript><pre>
+     # Set this to the root of your project when deployed:
+     http_path = "/"
+     css_dir = "Content"
+     sass_dir = "Content/sass"
+     images_dir = "Content/images"
+     javascripts_dir = "javascripts"
+ </pre></noscript>
+    <script src="https://gist.github.com/4457378.js?file=config.rb"> </script>
+  </li>
+  <li>Add application.scss file to Content/sass directory
+    <noscript><pre>
+     @import "compass/reset";
+     @import "twitter/bootstrap";
+     @import "twitter/responsive";
+ </pre></noscript>
+    <script src="https://gist.github.com/4457378.js?file=application_v1.scss"> </script>
+  </li>
+</ol>
+
+<p>So we are using one of compass built-in stylesheet (reset), main twitter bootstrap and reponsive stylesheet.</p>
+
+<p>Let’s compile ours stylesheets
+<code>compass compile</code>
+Now in Content directory we have all needed stylesheets.</p>
+
+<p>Update application layouts to use application.css from Content directory.</p>
+
+<p>delete followings</p>
+<noscript><pre>
+&lt;![CDATA[
+	&lt;link href="@Styles.Url("~/content/css")" rel="stylesheet"/&gt;
+	&lt;link href="@Styles.Url("~/Content/css-responsive")" rel="stylesheet" type="text/css" /&gt;
+]]&gt;
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=layout_1.html"> </script>
+
+<p>add only application.css</p>
+<noscript><pre>
+&lt;![CDATA[
+	&lt;link href="@Styles.Url("~/Content/application.css")" rel="stylesheet" type="text/css" /&gt;
+]]&gt;
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=layout_2.html"> </script>
+
+<p>Run application to check out if everything is working as it should.</p>
+
+<h2 id="playground">Playground</h2>
+
+<p>Before you start doing anything using Sass I recommend get familiar with its features - <a href="http://sass-lang.com/tutorial.html">Sass tutorial</a>. After that we can play around.</p>
+
+<p>I changed “sing-up” page.</p>
+
+<p>Move inline style from _BootstrapLayout.empty.cshtml layout into application.scss</p>
+
+<noscript><pre>
+body {
+	padding-top: 40px;
+	padding-bottom: 40px;
+	background-color: #f5f5f5;
+}
+.form-signin {
+	max-width: 300px;
+	padding: 19px 29px 29px;
+	margin: 0 auto 20px;
+	background-color: #fff;
+	border: 1px solid #e5e5e5;
+	-webkit-border-radius: 5px;
+	   -moz-border-radius: 5px;
+	        border-radius: 5px;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+	   -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+	        box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+	margin-bottom: 10px;
+}
+.form-signin input[type="text"],
+.form-signin input[type="password"] {
+	font-size: 16px;
+	height: auto;
+	margin-bottom: 15px;
+	padding: 7px 9px;
+}
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=application.css"> </script>
+
+<p>Now change it a little bit using sass features (I’m using variables from twitter bootstrap here) and import twitter bootstrap and compass default reset stylesheet.</p>
+<noscript><pre>
+@import "compass/reset";
+@import "twitter/bootstrap";
+body
+{
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: $white;
+}
+.form-signin
+{
+    max-width: 300px;
+    padding: 19px 29px 29px;
+    margin: 0 auto 20px;
+    background-color: $formActionsBackground;
+    border: 1px solid $inputBorder;
+    @include border-radius($baseBorderRadius);
+    @include box-shadow(inset 0 1px 2px rgba(0,0,0,.05));
+    .form-signin-heading, .checkbox
+    {
+        margin-bottom: 10px;
+    }
+    input[type="text"], input[type="password"]
+    {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+    }
+}   
+@import "twitter/responsive";
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=application_v2.scss"> </script>
+
+<p>It will change a little design, but… so what. In this little example I show you usage of variables, mixins and nestings. </p>
+
+<p>I don’t want to create sass tutorial here, just do what you want, experiment.</p>
+
+<h2 id="debugging-sass">Debugging sass</h2>
+
+<p>There is something that everyone hates in every code generating languages like coffeescript, typescript, less and sass - troubles with debugging. Browser shows you some errors in specific line of code which have nothing to do with your original development files.</p>
+
+<p>You can find some solutions to this problem.</p>
+
+<p>For chrome browser (24+) there is for now an experiment sass support feature. Obtain how to use it - <a href="http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools">http://benfrain.com/add-sass-compass-debug-info-for-chrome-web-developer-tools/</a></p>
+
+<p>For firefox you have <a href="https://addons.mozilla.org/pl/firefox/addon/firesass-for-firebug">FireSass extension</a>. You will find instructions on how to use it on <a href="http://nex-3.com/posts/92-firesass-bridges-the-gap-between-sass-and-firebug">http://nex-3.com/posts/92-firesass-bridges-the-gap-between-sass-and-firebug</a></p>
+
+<p>This solutions requires adding two config lines to config.rb file</p>
+<noscript><pre>
+	sass_options = {:debug_info =&gt; true}
+	output_style = :expanded
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=config_v2.rb"> </script>
+
+<h2 id="sass-compiling-improvements">Sass compiling improvements</h2>
+
+<p>At the end some tips how to improve stylesheet generation.</p>
+
+<p>Just type in the console</p>
+
+<p><code>compass watch</code></p>
+
+<p>And now everytime if you change something in your sass files, the compass will notice this and your stylesheets will be recompiled.</p>
+
+<p>You can also execute <code class="inline">compass compile</code> after your project compilation adding this to the end of the project file</p>
+<noscript><pre>
+<target name="AfterCompile" condition=" '$(Configuration)' == 'Release' ">
+    <exec command="compass compile" />
+    <itemgroup>
+        <content include="Styles\*.css" />
+    </itemgroup>
+</target>
+</pre></noscript>
+<script src="https://gist.github.com/4457378.js?file=project.xml"> </script>
+
+<h2 id="full-solution">Full solution</h2>
+
+<p>You can find end solution on <a href="https://github.com/tsubik/aspnet_twitter_sass">github</a>. That’s it, for futher reading I recommend <a href="http://thesassway.com">The Sass Way</a></p>
+
+
+                </div>
+            </article>
+        </section>
+        <hr class="blog-posts-separator"/>
+   
+         <section class="blog-posts">
+            <article>
+                <header class="post-header">
                    <a href="/blog/simple-jqueryui-dialogmanager/">
                     <h1 class="post-title">
                         Simple jQueryUI DialogManager
@@ -98,105 +368,6 @@ dialog.html('Here is the content');
 dialog.dialog('open');
 </pre></noscript>
 <script src="https://gist.github.com/3849685.js?file=usage.js"> </script>
-
-
-                </div>
-            </article>
-        </section>
-        <hr class="blog-posts-separator"/>
-   
-         <section class="blog-posts">
-            <article>
-                <header class="post-header">
-                   <a href="/blog/keep-your-files-in-vs-project-included-fast-and-elegant-solution/">
-                    <h1 class="post-title">
-                        Keep your files in VS project included. Fast and elegant solution
-                    </h1>
-                    </a>
-                    <p>
-                        <time datetime="2012-09-22 00:00:00 +0200">22 September, 2012</time>
-                    </p>
-                </header>
-                <div class="post-content">
-                     <p>In the previous article I wrote a <a href="/blog/powershell-script-to-bring-your-publish-to-the-next-level/">simple powershell script</a> to find all of the potentially missing file
-references from my Visual Studio project files.</p>
-
-<p>I realized, however, that the script has some performance issues. For a large solution, it takes quite a few seconds to get the work done.  So, I thought it would be much better to write some kind of library for this job. The fact is, I do not want to write some external tools like desktop application. I want to keep it simple. Simple like… installing the additional modules by <a href="http://nuget.org/">nuget</a>. Oh yeah, so just type some fancy command in package manager console and let it be done.</p>
-
-
-
-<p>Sounds perfect!</p>
-
-<h2 id="powershell-cmdlet">Powershell cmdlet</h2>
-
-<p>You can write your custom command extension for powershell, it is called “cmdlet”.
-So I wrote one to meet my requirements. 
-This is not a place for a tutorial “How to create custom cmdlet” that’s why if you want to know about it <a href="http://community.bartdesmet.net/blogs/bart/archive/2008/02/03/easy-windows-powershell-cmdlet-development-and-debugging.aspx">here you go some some hints</a> about creating and dubugging cmdlets. </p>
-
-<h2 id="vspniff">VSpniff</h2>
-
-<p>Let’s focus on my tool. I called it <a href="https://github.com/tsubik/VSpniff">VSpniff</a> – shortcut from Visual Studio project not included files finder. You can download the tool from <a href="https://github.com/tsubik/VSpniff">here</a>. There is also an instruction how to get the tool work in your Visual Studio package manager console.</p>
-
-<h2 id="finding-missing-files-references">Finding missing files references</h2>
-<p>Ok. So how does this works? Let’s simply assume we have some excluded files in project</p>
-
-<p><img src="/images/blog/vspniff_01.png" alt="excluded files" title="Excluded files" /></p>
-
-<p>They could be accidentally excluded by bad merge or something and we may not even know about it.
-After installing <a href="https://github.com/tsubik/VSpniff">VSpniff</a> you could use it to avoid such situations. Just type in the PM console</p>
-
-<noscript><pre>
-PM&gt; Find-MissingFiles
-</pre></noscript>
-<script src="https://gist.github.com/3766167.js?file=vspniff_command"> </script>
-
-<p>And here we go</p>
-
-<p><img src="/images/blog/vspniff_02.png" alt="missing files listed" title="Missing files listed" /></p>
-
-<p>All the missing files listed.</p>
-
-<h2 id="configuration">Configuration</h2>
-
-<p>Ok. Let assume we do not want to look for .png files in the Images folder  ;]. To do that, just add a config.vspniff file to the Images directory.</p>
-
-<noscript><pre>
-mode: append
-excludedExtensions: png
-</pre></noscript>
-<script src="https://gist.github.com/3766167.js?file=vspniff_config"> </script>
-
-<p>Run the tool once again and here we go</p>
-
-<p><img src="/images/blog/vspniff_03.png" alt="missing files listed 2" title="Missing files listed 2" /></p>
-
-<p>Configuration file must have .vspniff extension.</p>
-
-<p>There is a default configuration in the box (hard coded) to avoid the need of adding any
-configuration files.
-This default configuration looks like that</p>
-
-<noscript><pre>
-mode: override
-excludedExtensions: user, csproj, aps, pch, vspscc, vssscc, ncb, suo, tlb, tlh, bak, log, lib
-excludedDirs: bin, obj
-</pre></noscript>
-<script src="https://gist.github.com/3766167.js?file=vspniff_default_config"> </script>
-
-<p>Ok. So what does it mean?</p>
-
-<noscript><pre>
-#Mode - it is the way that the module will treat your options
-# append - it will append your options to current options context
-# override - in this and subdirs will only take this file options (unless in subdirs are also some config files)
-#excludedExtensions - files with these extensions will not be listed as missing files
-#excludedDirs - program will not be looking in these locations for missing files
-</pre></noscript>
-<script src="https://gist.github.com/3766167.js?file=vspniff_config_description"> </script>
-
-<p>This is it. I hope you will enjoy using this tool and it helps you avoid many bugs.</p>
-
-<p>Peace.</p>
 
 
                 </div>

@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Open-minded software developer who loves creating useful web apps (C#, asp.net mvc, jQuery, javascript, ruby on rails)">
+    <title>Port your cordova multi-platform hybrid app to Windows Phone 8.1</title>
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+    <link href="/css/Site.css" rel="stylesheet" type="text/css" />
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/pygments.css" rel="stylesheet" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,300,600' rel='stylesheet' type='text/css'>
+    <!-- [if lt IE 9]>
+        <script src="scripts/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+</head>
+<body>
+    <div id="container">
+        <header>
+        <section id="sectionMyName">
+        <a href="/" class="nounderline">
+            <h2>Tomasz Subik</h2>
+            <span id="myTitle">software developer</span>
+        </a>
+        </section>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+            </ul>
+        </nav>
+        </header>
+        <div style="clear: both;">
+        <section class="blog-posts">
+    <article>
+        <header class="post-header">
+            <a href="/blog/port-your-cordova-multi-platform-hybrid-app-to-windows-phone-8.1/">
+            <h1 class="post-title">
+                Port your cordova multi-platform hybrid app to Windows Phone 8.1
+            </h1>
+            </a>
+            <p>
+                <time datetime="2012-07-30">27 September, 2014</time>
+            </p>
+        </header>
+        <div class="post-content">
+            <p>Apache Cordova team announced official support for Windows Phone 8.1 platform in <a href="http://cordova.apache.org/announcements/2014/09/22/cordova-361.html">version 3.6.3</a>. Is it end of the agony for developers wanting to port their hybrid applications to Microsoft phone platform? I have some ionic application so let’s find out.</p>
+
+<!--more-->
+
+<h2 id="adding-platform">Adding platform</h2>
+
+<p><code>
+cordova platform add windows
+</code></p>
+
+<p>Why windows? Because of the support for some thing called ‘Universal App’, which means you can develop app once and run it on Windows 8, Windows 8.1 and Windows Phone 8.1. If you look at the created solution, there are few projects targeting different platforms and the common codebase.</p>
+
+<p><img src="/images/blog/universalapp_structure.png" alt="Universal App structure" /></p>
+
+<p>First thought - “Great I will have Windows desktop app also with some little efforts”. Let’s run the app on emulator (be aware of special switches between target platforms –phone –win)</p>
+
+<p><code>
+cordova run windows -- --phone
+</code></p>
+
+<p>And… <strong>It is not working :(</strong>. App crashes after open, I did not know what happened.</p>
+
+<h2 id="visual-studio-for-rescue">Visual Studio for rescue</h2>
+
+<p>Running application from Visual Studio will show us what actually happens</p>
+
+<blockquote>
+  <p>0x800c001c - JavaScript runtime error: Unable to add dynamic content. A script attempted to inject dynamic content, or elements previously modified dynamically, that might be unsafe. For example, using the innerHTML property to add script or malformed HTML will generate this exception. Use the htoStaticHTML method to filter dynamic content, or explicitly create elements and attributes with a method such as createElement.  For more information, see <a href="http://go.microsoft.com/fwlink/?LinkID=247104">http://go.microsoft.com/fwlink/?LinkID=247104</a>.</p>
+</blockquote>
+
+<p>What!? Following link from error message you find out about automatic script filtering, manipulating DOM in ‘secure way’ and much more. That means jquery - doesn’t works, angularjs - doesn’t works, ionic - doesn’t works, your code - probably doesn’t work. You have to change all ‘insecure’ parts of libraries code due to get them works. But there are many more restrictions developing WinJS applications and right now If you want to create app this way you will have to follow Microsoft rules. So I gave up for now and I am looking forward to better days using Universal App.</p>
+
+<h2 id="so-what-now">So what now?</h2>
+
+<p>Another approach which I prefer and <strong>it is working for my Ionic application</strong> is using old wp8 platform.</p>
+
+<p><code>
+cordova platform add wp8
+</code></p>
+
+<p>Then follow these few steps:</p>
+
+<ul>
+  <li>Retarget to Windows Phone 8.1. Open solution in visual studio, project properties.<img src="/images/blog/vs_retarget.png" alt="VS retarget" /></li>
+  <li>If you are not using Cordova 3.6.3 change all “execScript” to “eval” for the cordovalib</li>
+  <li>Replace XHRHelper.cs with <a href="https://gist.github.com/tsubik/17598d9e142a6876a300">this one</a> (I found it out somewhere on the web)</li>
+</ul>
+
+<p>That’s it! Now you can run emulator from Visual Studio and application works. It might not look like the same as on other devices you have to adapt it to IE11 :/.</p>
+
+
+        </div>
+    </article>
+</section>
+        <footer>
+            Copyright (c) 2012 Tomasz Subik
+        </footer>
+        </div>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-11585946-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>
