@@ -6,8 +6,8 @@
     <atom:link href="http://domain/rss.xml" rel="self" type="application/rss+xml" />
     <description></description>
     <language>en-au</language>
-    <pubDate>Sat, 27 Sep 2014 16:54:28 +0200</pubDate>
-    <lastBuildDate>Sat, 27 Sep 2014 16:54:28 +0200</lastBuildDate>
+    <pubDate>Tue, 07 Oct 2014 17:27:06 +0200</pubDate>
+    <lastBuildDate>Tue, 07 Oct 2014 17:27:06 +0200</lastBuildDate>
 
     
     <item>
@@ -47,6 +47,8 @@ cordova run windows -- --phone
 &lt;/blockquote&gt;
 
 &lt;p&gt;What!? Following link from error message you find out about automatic script filtering, manipulating DOM in ‘secure way’ and much more. That means jquery - doesn’t works, angularjs - doesn’t works, ionic - doesn’t works, your code - probably doesn’t work. You have to change all ‘insecure’ parts of libraries code due to get them works. But there are many more restrictions developing WinJS applications and right now If you want to create app this way you will have to follow Microsoft rules. So I gave up for now and I am looking forward to better days using Universal App.&lt;/p&gt;
+
+&lt;p&gt;[UPDATED: 2014-10-07] There is a small javascript shim library named &lt;a href=&quot;https://github.com/MsopenTech/winstore-jscompat&quot;&gt;winstore-jscompat&lt;/a&gt; created by &lt;a href=&quot;http://msopentech.com/&quot;&gt;MSOpenTech team&lt;/a&gt;. It is nice workaround to injecting dynamic content restriction issue, but I still have some problems with ionic lib.&lt;/p&gt;
 
 &lt;h2 id=&quot;so-what-now&quot;&gt;So what now?&lt;/h2&gt;
 

@@ -37,6 +37,8 @@ Running application from Visual Studio will show us what actually happens
 
 What!? Following link from error message you find out about automatic script filtering, manipulating DOM in 'secure way' and much more. That means jquery - doesn't works, angularjs - doesn't works, ionic - doesn't works, your code - probably doesn't work. You have to change all 'insecure' parts of libraries code due to get them works. But there are many more restrictions developing WinJS applications and right now If you want to create app this way you will have to follow Microsoft rules. So I gave up for now and I am looking forward to better days using Universal App.
 
+[UPDATED: 2014-10-07] There is a small javascript shim library named [winstore-jscompat](https://github.com/MsopenTech/winstore-jscompat) created by [MSOpenTech team](http://msopentech.com/). It is nice workaround to injecting dynamic content restriction issue, but I still have some problems with ionic lib.
+
 ##So what now?
 
 Another approach which I prefer and **it is working for my Ionic application** is using old wp8 platform.
